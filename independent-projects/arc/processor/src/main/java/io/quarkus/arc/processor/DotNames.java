@@ -1,5 +1,7 @@
 package io.quarkus.arc.processor;
 
+import cdi.lite.extension.LiteExtension;
+import cdi.lite.extension.TypeConfigurator;
 import io.quarkus.arc.AlternativePriority;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.arc.InjectableBean;
@@ -8,6 +10,7 @@ import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.impl.ComputingCache;
 import java.io.Serializable;
 import java.lang.annotation.Repeatable;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -111,6 +114,10 @@ public final class DotNames {
     public static final DotName DELEGATE = create(Delegate.class);
     public static final DotName SERIALIZABLE = create(Serializable.class);
     public static final DotName UNREMOVABLE = create(Unremovable.class);
+
+    public static final DotName LITE_EXTENSION = create(LiteExtension.class);
+    public static final DotName COLLECTION = create(Collection.class);
+    public static final DotName TYPE_CONFIGURATOR = create(TypeConfigurator.class);
 
     public static final DotName BOOLEAN = create(Boolean.class);
     public static final DotName BYTE = create(Byte.class);
