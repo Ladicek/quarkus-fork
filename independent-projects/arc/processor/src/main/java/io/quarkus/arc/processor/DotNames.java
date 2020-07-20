@@ -1,7 +1,7 @@
 package io.quarkus.arc.processor;
 
 import cdi.lite.extension.LiteExtension;
-import cdi.lite.extension.TypeConfigurator;
+import cdi.lite.extension.ClassConfig;
 import io.quarkus.arc.AlternativePriority;
 import io.quarkus.arc.DefaultBean;
 import io.quarkus.arc.InjectableInstance;
@@ -94,10 +94,6 @@ public final class DotNames {
     public static final DotName TRANSACTION_PHASE = create(TransactionPhase.class);
     public static final DotName INITIALIZED = create(Initialized.class);
     public static final DotName TRANSIENT_REFERENCE = create(TransientReference.class);
-
-    public static final DotName LITE_EXTENSION = create(LiteExtension.class);
-    public static final DotName COLLECTION = create(Collection.class);
-    public static final DotName TYPE_CONFIGURATOR = create(TypeConfigurator.class);
 
     public static final DotName BOOLEAN = create(Boolean.class);
     public static final DotName BYTE = create(Byte.class);

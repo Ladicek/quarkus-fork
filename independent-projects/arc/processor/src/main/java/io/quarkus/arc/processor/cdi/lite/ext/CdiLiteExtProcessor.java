@@ -1,8 +1,7 @@
 package io.quarkus.arc.processor.cdi.lite.ext;
 
-import cdi.lite.extension.TypeConfigurator;
+import cdi.lite.extension.ClassConfig;
 import io.quarkus.arc.processor.BeanProcessor;
-import io.quarkus.arc.processor.DotNames;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -55,16 +54,16 @@ public class CdiLiteExtProcessor {
         List<Object> arguments = new ArrayList<>();
         for (Type type : method.parameters()) {
             Collection<ClassInfo> types = matchingTypesForExtensionMethodParameter(type);
-            Collection<TypeConfigurator<?>> typeConfigurators = typeConfiguratorsForTypes(types);
+            Collection<ClassConfig<?>> classConfigs = typeConfiguratorsForTypes(types);
             if (isSingular(type)) {
-                if (typeConfigurators.size() == 1) {
-                    arguments.add(typeConfigurators.iterator().next());
+                if (classConfigs.size() == 1) {
+                    arguments.add(classConfigs.iterator().next());
                 } else {
                     // should report an error here
-                    arguments.add(typeConfigurators);
+                    arguments.add(classConfigs);
                 }
             } else {
-                arguments.add(typeConfigurators);
+                arguments.add(classConfigs);
             }
         }
 
@@ -75,7 +74,7 @@ public class CdiLiteExtProcessor {
         if (parameter.kind() == Type.Kind.PARAMETERIZED_TYPE) {
             if (DotNames.COLLECTION.equals(parameter.name())) {
                 return false;
-            } else if (DotNames.TYPE_CONFIGURATOR.equals(parameter.name())) {
+            } else if (DotNames.CLASS_CONFIG.equals(parameter.name())) {
                 return true;
             }
         }
@@ -112,9 +111,9 @@ public class CdiLiteExtProcessor {
                 }
             } else {
                 Type upperBound = query.asWildcardType().extendsBound();
-                ClassInfo upperBoundClass = index.getClassByName(upperBound.name());
-                // if upperBoundClass is null, should report an error here
-                matchingTypes = Modifier.isInterface(upperBoundClass.flags())
+                ClassInfo clazz = index.getClassByName(upperBound.name());
+                // if clazz is null, should report an error here
+                matchingTypes = Modifier.isInterface(clazz.flags())
                         ? index.getAllKnownImplementors(upperBound.name()) // TODO is this reflexive?
                         : index.getAllKnownSubclasses(upperBound.name()); // TODO is this reflexive?
             }
@@ -128,14 +127,9 @@ public class CdiLiteExtProcessor {
         return matchingTypes;
     }
 
-    private Collection<TypeConfigurator<?>> typeConfiguratorsForTypes(Collection<ClassInfo> matchingTypes) {
+    private Collection<ClassConfig<?>> typeConfiguratorsForTypes(Collection<ClassInfo> matchingTypes) {
         return matchingTypes.stream()
-                .map(type -> new TypeConfigurator<Object>() {
-                    @Override
-                    public ClassInfo type() {
-                        return type;
-                    }
-
+                .map(type -> new ClassConfig<Object>() {
                     @Override
                     public void addAnnotation(Class<? extends Annotation> clazz, AnnotationValue... values) {
                         builder.addAnnotationTransformer(ctx -> {
@@ -165,8 +159,8 @@ public class CdiLiteExtProcessor {
             Class<?> argumentClass = arguments.get(i).getClass();
             if (Collection.class.isAssignableFrom(argumentClass)) {
                 parameterTypes[i] = Collection.class;
-            } else if (TypeConfigurator.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = TypeConfigurator.class;
+            } else if (ClassConfig.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = ClassConfig.class;
             } else {
                 // should never happen at this point
                 parameterTypes[i] = null;

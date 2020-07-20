@@ -4,7 +4,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cdi.lite.extension.LiteExtension;
-import cdi.lite.extension.TypeConfigurator;
+import cdi.lite.extension.ClassConfig;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.test.ArcTestContainer;
 import java.lang.annotation.Retention;
@@ -30,30 +30,30 @@ public class ChangeQualifierTest {
 
     public static class MyExtension {
         @LiteExtension
-        public void configureAnnotations(TypeConfigurator<MyFooService> foo,
-                TypeConfigurator<MyBarService> bar) {
+        public void configureAnnotations(ClassConfig<MyFooService> foo,
+                                         ClassConfig<MyBarService> bar) {
 
             foo.removeAnnotation(ann -> ann.name().toString().equals(MyQualifier.class.getName()));
             bar.addAnnotation(MyQualifier.class);
         }
 
         @LiteExtension
-        public void test(Collection<TypeConfigurator<? extends MyService>> upperBound,
-                Collection<TypeConfigurator<? super MyService>> lowerBound,
-                Collection<TypeConfigurator<MyService>> single,
-                Collection<TypeConfigurator<?>> all) {
+        public void test(Collection<ClassConfig<? extends MyService>> upperBound,
+                Collection<ClassConfig<? super MyService>> lowerBound,
+                Collection<ClassConfig<MyService>> single,
+                Collection<ClassConfig<?>> all) {
 
             System.out.println("!!! upper bound");
-            upperBound.stream().map(TypeConfigurator::type).forEach(System.out::println);
+            upperBound.stream().map(ClassConfig::type).forEach(System.out::println);
 
             System.out.println("!!! lower bound");
-            lowerBound.stream().map(TypeConfigurator::type).forEach(System.out::println);
+            lowerBound.stream().map(ClassConfig::type).forEach(System.out::println);
 
             System.out.println("!!! single");
-            single.stream().map(TypeConfigurator::type).forEach(System.out::println);
+            single.stream().map(ClassConfig::type).forEach(System.out::println);
 
             System.out.println("!!! all");
-            all.stream().map(TypeConfigurator::type).forEach(System.out::println);
+            all.stream().map(ClassConfig::type).forEach(System.out::println);
         }
     }
 
