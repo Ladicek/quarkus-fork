@@ -6,11 +6,8 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Set;
 
-import javax.annotation.Priority;
 import javax.inject.Singleton;
 
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.faulttolerance.Asynchronous;
 import org.eclipse.microprofile.faulttolerance.Bulkhead;
 import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
@@ -18,8 +15,6 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.FallbackHandler;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
-import org.jboss.jandex.AnnotationTarget.Kind;
-import org.jboss.jandex.AnnotationValue;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.IndexView;
@@ -31,7 +26,6 @@ import io.quarkus.arc.deployment.BeanArchiveIndexBuildItem;
 import io.quarkus.arc.deployment.BeanDefiningAnnotationBuildItem;
 import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
 import io.quarkus.arc.processor.AnnotationStore;
-import io.quarkus.arc.processor.AnnotationsTransformer;
 import io.quarkus.arc.processor.BeanInfo;
 import io.quarkus.arc.processor.BuildExtension;
 import io.quarkus.arc.processor.BuiltinScope;
@@ -52,10 +46,10 @@ import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
 import io.quarkus.smallrye.faulttolerance.runtime.NoopMetricRegistry;
 import io.quarkus.smallrye.faulttolerance.runtime.QuarkusFallbackHandlerProvider;
 import io.quarkus.smallrye.faulttolerance.runtime.QuarkusFaultToleranceOperationProvider;
+import io.quarkus.smallrye.faulttolerance.runtime.SmallRyeFaultToleranceCdiLiteExtension;
 import io.quarkus.smallrye.faulttolerance.runtime.SmallRyeFaultToleranceRecorder;
 import io.smallrye.faulttolerance.ExecutorFactory;
 import io.smallrye.faulttolerance.ExecutorProvider;
-import io.smallrye.faulttolerance.FaultToleranceBinding;
 import io.smallrye.faulttolerance.FaultToleranceInterceptor;
 import io.smallrye.faulttolerance.internal.RequestContextControllerProvider;
 import io.smallrye.faulttolerance.internal.StrategyCache;
@@ -120,21 +114,6 @@ public class SmallRyeFaultToleranceProcessor {
             additionalBda.produce(new BeanDefiningAnnotationBuildItem(annotation));
         }
 
-        // Add transitive interceptor binding to FT annotations
-        annotationsTransformer.produce(new AnnotationsTransformerBuildItem(new AnnotationsTransformer() {
-            @Override
-            public boolean appliesTo(Kind kind) {
-                return kind == Kind.CLASS;
-            }
-
-            @Override
-            public void transform(TransformationContext context) {
-                if (FT_ANNOTATIONS.contains(context.getTarget().asClass().name())) {
-                    context.transform().add(FaultToleranceBinding.class).done();
-                }
-            }
-        }));
-
         // Register bean classes
         AdditionalBeanBuildItem.Builder builder = AdditionalBeanBuildItem.builder();
         // Also register MP FT annotations so that they are recognized as interceptor bindings
@@ -147,7 +126,10 @@ public class SmallRyeFaultToleranceProcessor {
                 StrategyCache.class,
                 QuarkusFaultToleranceOperationProvider.class,
                 QuarkusFallbackHandlerProvider.class,
-                MetricsCollectorFactory.class);
+                MetricsCollectorFactory.class,
+                // TODO this is hopefully only necessary because the class is in Quarkus;
+                //  if it was in SmallRye Fault Tolerance, it should work out of the box
+                SmallRyeFaultToleranceCdiLiteExtension.class);
         additionalBean.produce(builder.build());
 
         if (!metricsCapability.isPresent()) {
@@ -156,35 +138,6 @@ public class SmallRyeFaultToleranceProcessor {
                     .setDefaultScope(DotName.createSimple(Singleton.class.getName())).build());
             systemProperty.produce(new SystemPropertyBuildItem("MP_Fault_Tolerance_Metrics_Enabled", "false"));
         }
-    }
-
-    @BuildStep
-    AnnotationsTransformerBuildItem transformInterceptorPriority(BeanArchiveIndexBuildItem index) {
-        return new AnnotationsTransformerBuildItem(new AnnotationsTransformer() {
-            @Override
-            public boolean appliesTo(Kind kind) {
-                return kind == Kind.CLASS;
-            }
-
-            @Override
-            public void transform(TransformationContext ctx) {
-                if (ctx.isClass()) {
-                    if (!ctx.getTarget().asClass().name().toString()
-                            .equals("io.smallrye.faulttolerance.FaultToleranceInterceptor")) {
-                        return;
-                    }
-                    final Config config = ConfigProvider.getConfig();
-
-                    OptionalInt priority = config.getValue("mp.fault.tolerance.interceptor.priority", OptionalInt.class);
-                    if (priority.isPresent()) {
-                        ctx.transform()
-                                .remove(ann -> ann.name().toString().equals(Priority.class.getName()))
-                                .add(Priority.class, AnnotationValue.createIntegerValue("value", priority.getAsInt()))
-                                .done();
-                    }
-                }
-            }
-        });
     }
 
     @BuildStep
