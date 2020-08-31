@@ -66,6 +66,12 @@
             <artifactId>smallrye-fault-tolerance-context-propagation</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.quarkus.arc</groupId>
+            <artifactId>cdi-lite-ext-api</artifactId>
+            <version>999-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>
