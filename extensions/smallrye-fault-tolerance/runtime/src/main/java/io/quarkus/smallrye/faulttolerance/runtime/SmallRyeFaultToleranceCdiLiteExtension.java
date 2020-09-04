@@ -13,10 +13,10 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 
-import cdi.lite.extension.Annotations;
+import cdi.lite.extension.phases.enhancement.Annotations;
 import cdi.lite.extension.Extension;
 import cdi.lite.extension.World;
-import cdi.lite.extension.model.configs.ClassConfig;
+import cdi.lite.extension.phases.enhancement.ClassConfig;
 import io.smallrye.faulttolerance.FaultToleranceBinding;
 import io.smallrye.faulttolerance.FaultToleranceInterceptor;
 
