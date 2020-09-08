@@ -13,15 +13,15 @@ import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
 
+import cdi.lite.extension.phases.Enhancement;
 import cdi.lite.extension.phases.enhancement.Annotations;
-import cdi.lite.extension.Extension;
-import cdi.lite.extension.World;
+import cdi.lite.extension.phases.enhancement.AppArchiveConfig;
 import cdi.lite.extension.phases.enhancement.ClassConfig;
 import io.smallrye.faulttolerance.FaultToleranceBinding;
 import io.smallrye.faulttolerance.FaultToleranceInterceptor;
 
 public class SmallRyeFaultToleranceCdiLiteExtension {
-    @Extension
+    @Enhancement
     public void process(ClassConfig<Asynchronous> asynchronousClass,
             ClassConfig<Bulkhead> bulkheadClass,
             ClassConfig<CircuitBreaker> circuitBreakerClass,
@@ -30,7 +30,7 @@ public class SmallRyeFaultToleranceCdiLiteExtension {
             ClassConfig<Timeout> timeoutClass,
             ClassConfig<FaultToleranceInterceptor> ftInterceptorClass,
             Annotations ann,
-            World world) {
+            AppArchiveConfig app) {
 
         asynchronousClass.addAnnotation(FaultToleranceBinding.class);
         bulkheadClass.addAnnotation(FaultToleranceBinding.class);
@@ -40,7 +40,7 @@ public class SmallRyeFaultToleranceCdiLiteExtension {
         timeoutClass.addAnnotation(FaultToleranceBinding.class);
 
         // alternative:
-//        world.classes()
+//        app.classes()
 //                .exactly(Asynchronous.class)
 //                .exactly(Bulkhead.class)
 //                .exactly(CircuitBreaker.class)
