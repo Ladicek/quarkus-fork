@@ -5,9 +5,9 @@ import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.MethodInfo;
 import cdi.lite.extension.model.declarations.ParameterInfo;
 import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.event.Reception;
+import jakarta.enterprise.event.TransactionPhase;
 import java.util.Collection;
-import javax.enterprise.event.Reception;
-import javax.enterprise.event.TransactionPhase;
 
 /**
  * @param <T> type observed by the inspected observer

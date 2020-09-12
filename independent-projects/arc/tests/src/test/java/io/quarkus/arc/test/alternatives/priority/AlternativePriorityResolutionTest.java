@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import io.quarkus.arc.AlternativePriority;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.test.ArcTestContainer;
-import javax.annotation.Priority;
-import javax.enterprise.inject.*;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.inject.*;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

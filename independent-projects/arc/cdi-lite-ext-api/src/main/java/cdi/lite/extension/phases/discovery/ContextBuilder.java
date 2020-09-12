@@ -1,7 +1,7 @@
 package cdi.lite.extension.phases.discovery;
 
+import jakarta.enterprise.context.spi.AlterableContext;
 import java.lang.annotation.Annotation;
-import javax.enterprise.context.spi.AlterableContext;
 
 public interface ContextBuilder {
     /**

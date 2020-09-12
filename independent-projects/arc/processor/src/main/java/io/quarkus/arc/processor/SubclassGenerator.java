@@ -22,6 +22,9 @@ import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.gizmo.MethodDescriptor;
 import io.quarkus.gizmo.ResultHandle;
 import io.quarkus.gizmo.TryBlock;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.InterceptionType;
+import jakarta.interceptor.InvocationContext;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -39,9 +42,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.InterceptionType;
-import javax.interceptor.InvocationContext;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
@@ -99,7 +99,6 @@ public class SubclassGenerator extends AbstractGenerator {
      *
      * @param bean
      * @param beanClassName Fully qualified class name
-     * @param existingClasses
      * @return a java file
      */
     Collection<Resource> generate(BeanInfo bean, String beanClassName) {

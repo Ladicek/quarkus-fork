@@ -8,6 +8,12 @@ import io.quarkus.arc.InjectableInstance;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.arc.WithCaching;
 import io.quarkus.arc.impl.CurrentInjectionPointProvider.InjectionPointImpl;
+import jakarta.enterprise.context.ContextNotActiveException;
+import jakarta.enterprise.inject.AmbiguousResolutionException;
+import jakarta.enterprise.inject.UnsatisfiedResolutionException;
+import jakarta.enterprise.inject.spi.InjectionPoint;
+import jakarta.enterprise.util.TypeLiteral;
+import jakarta.inject.Provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Member;
 import java.lang.reflect.ParameterizedType;
@@ -18,12 +24,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
-import javax.enterprise.context.ContextNotActiveException;
-import javax.enterprise.inject.AmbiguousResolutionException;
-import javax.enterprise.inject.UnsatisfiedResolutionException;
-import javax.enterprise.inject.spi.InjectionPoint;
-import javax.enterprise.util.TypeLiteral;
-import javax.inject.Provider;
 
 /**
  *

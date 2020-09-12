@@ -14,12 +14,12 @@ import cdi.lite.extension.phases.enhancement.ClassConfig;
 import cdi.lite.extension.phases.enhancement.FieldConfig;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.test.ArcTestContainer;
+import jakarta.inject.Inject;
+import jakarta.inject.Qualifier;
+import jakarta.inject.Singleton;
 import java.lang.annotation.Retention;
 import java.util.Collection;
 import java.util.stream.Collectors;
-import javax.inject.Inject;
-import javax.inject.Qualifier;
-import javax.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

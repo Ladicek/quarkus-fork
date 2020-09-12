@@ -11,11 +11,11 @@ import io.quarkus.arc.InjectableInstance;
 import io.quarkus.arc.InstanceHandle;
 import io.quarkus.arc.impl.InstanceImpl;
 import io.quarkus.arc.test.ArcTestContainer;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.annotation.PreDestroy;
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 

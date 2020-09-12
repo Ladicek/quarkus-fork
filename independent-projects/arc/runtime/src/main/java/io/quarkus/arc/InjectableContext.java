@@ -1,8 +1,8 @@
 package io.quarkus.arc;
 
+import jakarta.enterprise.context.NormalScope;
+import jakarta.enterprise.context.spi.AlterableContext;
 import java.util.Map;
-import javax.enterprise.context.NormalScope;
-import javax.enterprise.context.spi.AlterableContext;
 
 /**
  * A context implementing this interface allows to capture and view its state via {@link ContextState}.

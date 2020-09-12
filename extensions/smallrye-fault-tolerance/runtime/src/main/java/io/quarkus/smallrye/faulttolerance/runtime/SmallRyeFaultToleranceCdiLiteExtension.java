@@ -40,15 +40,15 @@ public class SmallRyeFaultToleranceCdiLiteExtension {
         timeoutClass.addAnnotation(FaultToleranceBinding.class);
 
         // alternative:
-//        app.classes()
-//                .exactly(Asynchronous.class)
-//                .exactly(Bulkhead.class)
-//                .exactly(CircuitBreaker.class)
-//                .exactly(Fallback.class)
-//                .exactly(Retry.class)
-//                .exactly(Timeout.class)
-//                .configure()
-//                .forEach(it -> it.addAnnotation(new FaultToleranceBinding.Literal()));
+        //        app.classes()
+        //                .exactly(Asynchronous.class)
+        //                .exactly(Bulkhead.class)
+        //                .exactly(CircuitBreaker.class)
+        //                .exactly(Fallback.class)
+        //                .exactly(Retry.class)
+        //                .exactly(Timeout.class)
+        //                .configure()
+        //                .forEach(it -> it.addAnnotation(new FaultToleranceBinding.Literal()));
 
         // in the original Quarkus extension, this runs later (the build step consumes BeanArchiveIndexBuildItem)
         // do we need to find a way how to express that in CDI Lite Extensions?
@@ -58,7 +58,7 @@ public class SmallRyeFaultToleranceCdiLiteExtension {
             ftInterceptorClass.removeAnnotation(it -> it.name().equals(Priority.class.getName()));
             ftInterceptorClass.addAnnotation(Priority.class, ann.attribute("value", priority.getAsInt()));
             // alternative:
-//            ftInterceptorClass.addAnnotation(new FaultToleranceExtension.PriorityLiteral(priority.getAsInt()));
+            //            ftInterceptorClass.addAnnotation(new FaultToleranceExtension.PriorityLiteral(priority.getAsInt()));
         }
     }
 }

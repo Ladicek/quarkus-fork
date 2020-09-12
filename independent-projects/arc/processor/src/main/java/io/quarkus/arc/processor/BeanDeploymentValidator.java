@@ -1,7 +1,7 @@
 package io.quarkus.arc.processor;
 
+import jakarta.enterprise.inject.spi.DeploymentException;
 import java.util.List;
-import javax.enterprise.inject.spi.DeploymentException;
 
 /**
  * Makes it possible to validate the bean deployment and also to skip some validation rules for specific components.

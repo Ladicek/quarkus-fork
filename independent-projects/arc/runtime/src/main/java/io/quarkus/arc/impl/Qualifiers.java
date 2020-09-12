@@ -1,5 +1,9 @@
 package io.quarkus.arc.impl;
 
+import jakarta.enterprise.inject.Any;
+import jakarta.enterprise.inject.Default;
+import jakarta.enterprise.util.Nonbinding;
+import jakarta.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -7,10 +11,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.enterprise.inject.Any;
-import javax.enterprise.inject.Default;
-import javax.enterprise.util.Nonbinding;
-import javax.inject.Qualifier;
 
 public final class Qualifiers {
 

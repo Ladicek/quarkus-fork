@@ -1,8 +1,8 @@
 package io.quarkus.arc;
 
+import jakarta.interceptor.InvocationContext;
 import java.lang.annotation.Annotation;
 import java.util.Set;
-import javax.interceptor.InvocationContext;
 
 /**
  *
