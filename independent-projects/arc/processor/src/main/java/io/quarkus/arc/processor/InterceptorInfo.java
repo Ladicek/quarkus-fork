@@ -2,13 +2,13 @@ package io.quarkus.arc.processor;
 
 import static io.quarkus.arc.processor.IndexClassLookupUtils.getClassByName;
 
+import jakarta.enterprise.inject.spi.InterceptionType;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.enterprise.inject.spi.InterceptionType;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.ClassInfo;
@@ -72,9 +72,9 @@ public class InterceptorInfo extends BeanInfo implements Comparable<InterceptorI
                 } else if (method.hasAnnotation(DotNames.AROUND_CONSTRUCT)) {
                     // validate compliance with rules for AroundConstruct methods
                     if (!method.parameters().equals(Collections.singletonList(
-                            Type.create(DotName.createSimple("javax.interceptor.InvocationContext"), Type.Kind.CLASS)))) {
+                            Type.create(DotName.createSimple("jakarta.interceptor.InvocationContext"), Type.Kind.CLASS)))) {
                         throw new IllegalStateException(
-                                "@AroundConstruct must have exactly one argument of type javax.interceptor.InvocationContext, but method "
+                                "@AroundConstruct must have exactly one argument of type jakarta.interceptor.InvocationContext, but method "
                                         + method.asMethod() + " declared by " + method.declaringClass()
                                         + " violates this.");
                     }

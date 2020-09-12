@@ -10,6 +10,9 @@ import io.quarkus.arc.processor.BuildExtension.BuildContext;
 import io.quarkus.arc.processor.BuildExtension.Key;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.gizmo.ResultHandle;
+import jakarta.enterprise.event.Reception;
+import jakarta.enterprise.inject.spi.DefinitionException;
+import jakarta.enterprise.inject.spi.DeploymentException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -30,9 +33,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import javax.enterprise.event.Reception;
-import javax.enterprise.inject.spi.DefinitionException;
-import javax.enterprise.inject.spi.DeploymentException;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.AnnotationTarget.Kind;
@@ -528,6 +528,10 @@ public class BeanDeployment {
 
         Map<DotName, StereotypeInfo> stereotypes = new HashMap<>();
         final List<AnnotationInstance> stereotypeAnnotations = new ArrayList<>(index.getAnnotations(DotNames.STEREOTYPE));
+        // Allow legacy stereotypes
+        Collection<AnnotationInstance> legacySterotypeAnnotations = index.getAnnotations(DotNames.STEREOTYPE_JAVAX);
+        stereotypeAnnotations.addAll(legacySterotypeAnnotations);
+
         for (final Collection<AnnotationInstance> annotations : additionalStereotypes.values()) {
             stereotypeAnnotations.addAll(annotations);
         }
@@ -543,7 +547,8 @@ public class BeanDeployment {
                 boolean isNamed = false;
 
                 for (AnnotationInstance annotation : annotationStore.getAnnotations(stereotypeClass)) {
-                    if (DotNames.ALTERNATIVE.equals(annotation.name())) {
+                    if (DotNames.ALTERNATIVE.equals(annotation.name())
+                            || DotNames.ALTERNATIVE_JAVAX.equals(annotation.name())) {
                         isAlternative = true;
                     } else if (interceptorBindings.containsKey(annotation.name())) {
                         bindings.add(annotation);
@@ -555,7 +560,8 @@ public class BeanDeployment {
                                     "Stereotype must not declare @Named with a non-empty value: " + stereotypeClass);
                         }
                         isNamed = true;
-                    } else if (DotNames.PRIORITY.equals(annotation.name())) {
+                    } else if (DotNames.PRIORITY.equals(annotation.name())
+                            || DotNames.PRIORITY_JAVAX.equals(annotation.name())) {
                         alternativePriority = annotation.value().asInt();
                     } else {
                         final ScopeInfo scope = getScope(annotation.name(), customContexts);

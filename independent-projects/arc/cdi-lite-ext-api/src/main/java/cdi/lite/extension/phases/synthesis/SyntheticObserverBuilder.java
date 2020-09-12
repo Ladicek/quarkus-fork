@@ -4,8 +4,8 @@ import cdi.lite.extension.model.AnnotationAttribute;
 import cdi.lite.extension.model.AnnotationInfo;
 import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.types.Type;
+import jakarta.enterprise.event.TransactionPhase;
 import java.lang.annotation.Annotation;
-import javax.enterprise.event.TransactionPhase;
 
 /**
  * Instances are not reusable. For each synthetic observer, new instance must be created by

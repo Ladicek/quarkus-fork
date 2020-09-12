@@ -37,13 +37,13 @@ class StereotypeInfoImpl implements StereotypeInfo {
         return arcStereotype.isAlternative();
     }
 
-/*
-    @Override
-    public int priority() {
-        // TODO default value?
-        return arcStereotype.getAlternativePriority() != null ? arcStereotype.getAlternativePriority() : 0;
-    }
-*/
+    /*
+     * @Override
+     * public int priority() {
+     * // TODO default value?
+     * return arcStereotype.getAlternativePriority() != null ? arcStereotype.getAlternativePriority() : 0;
+     * }
+     */
 
     @Override
     public boolean isNamed() {

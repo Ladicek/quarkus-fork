@@ -1,7 +1,7 @@
 package io.quarkus.arc;
 
-import javax.enterprise.inject.spi.Interceptor;
-import javax.enterprise.inject.spi.Prioritized;
+import jakarta.enterprise.inject.spi.Interceptor;
+import jakarta.enterprise.inject.spi.Prioritized;
 
 /**
  * Quarkus representation of an interceptor bean.

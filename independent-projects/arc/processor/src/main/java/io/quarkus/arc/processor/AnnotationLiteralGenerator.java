@@ -17,6 +17,7 @@ import io.quarkus.gizmo.FieldDescriptor;
 import io.quarkus.gizmo.MethodCreator;
 import io.quarkus.gizmo.MethodDescriptor;
 import io.quarkus.gizmo.ResultHandle;
+import jakarta.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.enterprise.util.AnnotationLiteral;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget.Kind;
 import org.jboss.jandex.AnnotationValue;
@@ -73,8 +73,8 @@ public class AnnotationLiteralGenerator extends AbstractGenerator {
     }
 
     static void createSharedAnnotationLiteral(ClassOutput classOutput, Key key, Literal literal, Set<String> existingClasses) {
-        // Ljavax/enterprise/util/AnnotationLiteral<Lcom/foo/MyQualifier;>;Lcom/foo/MyQualifier;
-        String signature = String.format("Ljavax/enterprise/util/AnnotationLiteral<L%1$s;>;L%1$s;",
+        // Ljakarta/enterprise/util/AnnotationLiteral<Lcom/foo/MyQualifier;>;Lcom/foo/MyQualifier;
+        String signature = String.format("Ljakarta/enterprise/util/AnnotationLiteral<L%1$s;>;L%1$s;",
                 key.annotationName.toString().replace('.', '/'));
         String generatedName = literal.className.replace('.', '/');
         if (existingClasses.contains(generatedName)) {
@@ -123,8 +123,8 @@ public class AnnotationLiteralGenerator extends AbstractGenerator {
         Map<String, AnnotationValue> annotationValues = annotationInstance.values().stream()
                 .collect(Collectors.toMap(AnnotationValue::name, Function.identity()));
 
-        // Ljavax/enterprise/util/AnnotationLiteral<Lcom/foo/MyQualifier;>;Lcom/foo/MyQualifier;
-        String signature = String.format("Ljavax/enterprise/util/AnnotationLiteral<L%1$s;>;L%1$s;",
+        // Ljakarta/enterprise/util/AnnotationLiteral<Lcom/foo/MyQualifier;>;Lcom/foo/MyQualifier;
+        String signature = String.format("Ljakarta/enterprise/util/AnnotationLiteral<L%1$s;>;L%1$s;",
                 annotationClass.name().toString().replace('.', '/'));
         String generatedName = literalName.replace('.', '/');
 

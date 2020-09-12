@@ -4,6 +4,8 @@ import static io.quarkus.arc.processor.IndexClassLookupUtils.getClassByName;
 
 import io.quarkus.arc.processor.Methods.MethodKey;
 import io.quarkus.gizmo.MethodCreator;
+import jakarta.enterprise.inject.spi.DeploymentException;
+import jakarta.enterprise.inject.spi.InterceptionType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,8 +20,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import javax.enterprise.inject.spi.DeploymentException;
-import javax.enterprise.inject.spi.InterceptionType;
 import org.jboss.jandex.AnnotationInstance;
 import org.jboss.jandex.AnnotationTarget;
 import org.jboss.jandex.AnnotationTarget.Kind;
