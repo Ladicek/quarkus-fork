@@ -73,7 +73,14 @@ class TypesImpl implements Types {
     }
 
     @Override
-    public Type ofClass(ClassInfo<?> clazz) {
+    public Type ofClass(String clazz) {
+        org.jboss.jandex.Type jandexType = org.jboss.jandex.Type.create(DotName.createSimple(clazz),
+                org.jboss.jandex.Type.Kind.CLASS);
+        return new ClassTypeImpl(jandexIndex, annotationOverlays, jandexType.asClassType());
+    }
+
+    @Override
+    public Type ofClass(ClassInfo clazz) {
         org.jboss.jandex.Type jandexType = org.jboss.jandex.Type.create(((ClassInfoImpl) clazz).jandexDeclaration.name(),
                 org.jboss.jandex.Type.Kind.CLASS);
         return new ClassTypeImpl(jandexIndex, annotationOverlays, jandexType.asClassType());
@@ -87,15 +94,8 @@ class TypesImpl implements Types {
     }
 
     @Override
-    public Type parameterized(Class<?> parameterizedType, Class<?>... typeArguments) {
-        DotName parameterizedTypeName = DotName.createSimple(parameterizedType.getName());
-        Type[] transformedTypeArguments = Arrays.stream(typeArguments).map(this::of).toArray(Type[]::new);
-        return parameterizedType(parameterizedTypeName, transformedTypeArguments);
-    }
-
-    @Override
-    public Type parameterized(Class<?> parameterizedType, Type... typeArguments) {
-        DotName parameterizedTypeName = DotName.createSimple(parameterizedType.getName());
+    public Type parameterized(String parameterizedType, Type... typeArguments) {
+        DotName parameterizedTypeName = DotName.createSimple(parameterizedType);
         return parameterizedType(parameterizedTypeName, typeArguments);
     }
 

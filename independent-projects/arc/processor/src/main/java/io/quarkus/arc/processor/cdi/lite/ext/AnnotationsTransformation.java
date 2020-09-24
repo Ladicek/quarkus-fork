@@ -65,7 +65,7 @@ abstract class AnnotationsTransformation<Key, JandexDeclaration extends org.jbos
         addAnnotation(jandexDeclaration, name, attributes);
     }
 
-    void addAnnotation(JandexDeclaration jandexDeclaration, ClassInfo<?> clazz, AnnotationAttribute... attributes) {
+    void addAnnotation(JandexDeclaration jandexDeclaration, ClassInfo clazz, AnnotationAttribute... attributes) {
         DotName name = ((ClassInfoImpl) clazz).jandexDeclaration.name();
         addAnnotation(jandexDeclaration, name, attributes);
     }

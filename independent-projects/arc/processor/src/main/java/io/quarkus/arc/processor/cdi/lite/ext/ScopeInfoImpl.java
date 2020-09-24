@@ -17,7 +17,7 @@ class ScopeInfoImpl implements ScopeInfo {
     }
 
     @Override
-    public ClassInfo<?> annotation() {
+    public ClassInfo annotation() {
         org.jboss.jandex.ClassInfo jandexClass = jandexIndex.getClassByName(arcScopeInfo.getDotName());
         return new ClassInfoImpl(jandexIndex, annotationOverlays, jandexClass);
     }

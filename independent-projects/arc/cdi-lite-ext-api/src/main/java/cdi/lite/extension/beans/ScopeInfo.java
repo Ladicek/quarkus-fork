@@ -3,7 +3,7 @@ package cdi.lite.extension.beans;
 import cdi.lite.extension.model.declarations.ClassInfo;
 
 public interface ScopeInfo {
-    ClassInfo<?> annotation();
+    ClassInfo annotation();
 
     /**
      * Equivalent to {@code annotation().name()}.

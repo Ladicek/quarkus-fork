@@ -26,21 +26,21 @@ public interface SyntheticObserverBuilder {
      * TODO this can have implementation consequences? e.g., must the class be added to the bean archive?
      */
     // if called multiple times, last call wins
-    SyntheticObserverBuilder declaringClass(Class<?> beanClass);
+    SyntheticObserverBuilder declaringClass(String beanClass);
 
-    SyntheticObserverBuilder declaringClass(ClassInfo<?> beanClass);
+    SyntheticObserverBuilder declaringClass(ClassInfo beanClass);
 
     // if called multiple times, last call wins
-    SyntheticObserverBuilder observedType(Class<?> observedType);
+    SyntheticObserverBuilder observedType(String observedType);
 
-    SyntheticObserverBuilder observedType(ClassInfo<?> observedType);
+    SyntheticObserverBuilder observedType(ClassInfo observedType);
 
     SyntheticObserverBuilder observedType(Type observedType);
 
     // can be called multiple times and is additive
     SyntheticObserverBuilder qualifier(Class<? extends Annotation> qualifierAnnotation, AnnotationAttribute... attributes);
 
-    SyntheticObserverBuilder qualifier(ClassInfo<?> qualifierAnnotation, AnnotationAttribute... attributes);
+    SyntheticObserverBuilder qualifier(ClassInfo qualifierAnnotation, AnnotationAttribute... attributes);
 
     SyntheticObserverBuilder qualifier(AnnotationInfo qualifierAnnotation);
 

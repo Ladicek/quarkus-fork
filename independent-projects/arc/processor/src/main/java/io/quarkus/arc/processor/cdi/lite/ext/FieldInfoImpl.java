@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.Objects;
 import org.jboss.jandex.DotName;
 
-class FieldInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.FieldInfo> implements FieldInfo<Object> {
+class FieldInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.FieldInfo> implements FieldInfo {
     // only for equals/hashCode
     private final DotName className;
     private final String name;

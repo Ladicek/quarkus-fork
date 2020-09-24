@@ -6,29 +6,25 @@ import javax.annotation.Priority;
 
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.config.ConfigProvider;
-import org.eclipse.microprofile.faulttolerance.Asynchronous;
-import org.eclipse.microprofile.faulttolerance.Bulkhead;
-import org.eclipse.microprofile.faulttolerance.CircuitBreaker;
-import org.eclipse.microprofile.faulttolerance.Fallback;
-import org.eclipse.microprofile.faulttolerance.Retry;
-import org.eclipse.microprofile.faulttolerance.Timeout;
 
+import cdi.lite.extension.ExactType;
 import cdi.lite.extension.phases.Enhancement;
 import cdi.lite.extension.phases.enhancement.Annotations;
 import cdi.lite.extension.phases.enhancement.AppArchiveConfig;
 import cdi.lite.extension.phases.enhancement.ClassConfig;
 import io.smallrye.faulttolerance.FaultToleranceBinding;
-import io.smallrye.faulttolerance.FaultToleranceInterceptor;
+import io.smallrye.faulttolerance.FaultToleranceExtension;
 
 public class SmallRyeFaultToleranceCdiLiteExtension {
     @Enhancement
-    public void process(ClassConfig<Asynchronous> asynchronousClass,
-            ClassConfig<Bulkhead> bulkheadClass,
-            ClassConfig<CircuitBreaker> circuitBreakerClass,
-            ClassConfig<Fallback> fallbackClass,
-            ClassConfig<Retry> retryClass,
-            ClassConfig<Timeout> timeoutClass,
-            ClassConfig<FaultToleranceInterceptor> ftInterceptorClass,
+    public void process(
+            @ExactType("org.eclipse.microprofile.faulttolerance.Asynchronous") ClassConfig asynchronousClass,
+            @ExactType("org.eclipse.microprofile.faulttolerance.Bulkhead") ClassConfig bulkheadClass,
+            @ExactType("org.eclipse.microprofile.faulttolerance.CircuitBreaker") ClassConfig circuitBreakerClass,
+            @ExactType("org.eclipse.microprofile.faulttolerance.Fallback") ClassConfig fallbackClass,
+            @ExactType("org.eclipse.microprofile.faulttolerance.Retry") ClassConfig retryClass,
+            @ExactType("org.eclipse.microprofile.faulttolerance.Timeout") ClassConfig timeoutClass,
+            @ExactType("io.smallrye.faulttolerance.FaultToleranceInterceptor") ClassConfig ftInterceptorClass,
             Annotations ann,
             AppArchiveConfig app) {
 
@@ -41,12 +37,12 @@ public class SmallRyeFaultToleranceCdiLiteExtension {
 
         // alternative:
 //        app.classes()
-//                .exactly(Asynchronous.class)
-//                .exactly(Bulkhead.class)
-//                .exactly(CircuitBreaker.class)
-//                .exactly(Fallback.class)
-//                .exactly(Retry.class)
-//                .exactly(Timeout.class)
+//                .exactly("org.eclipse.microprofile.faulttolerance.Asynchronous")
+//                .exactly("org.eclipse.microprofile.faulttolerance.Bulkhead")
+//                .exactly("org.eclipse.microprofile.faulttolerance.CircuitBreaker")
+//                .exactly("org.eclipse.microprofile.faulttolerance.Fallback")
+//                .exactly("org.eclipse.microprofile.faulttolerance.Retry")
+//                .exactly("org.eclipse.microprofile.faulttolerance.Timeout")
 //                .configure()
 //                .forEach(it -> it.addAnnotation(new FaultToleranceBinding.Literal()));
 

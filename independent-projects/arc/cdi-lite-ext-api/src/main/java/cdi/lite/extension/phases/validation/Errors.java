@@ -19,12 +19,12 @@ public interface Errors {
     /**
      * Add an error which is related to given {@link BeanInfo}.
      */
-    void add(String message, BeanInfo<?> relatedTo);
+    void add(String message, BeanInfo relatedTo);
 
     /**
      * Add an error which is related to given {@link ObserverInfo}.
      */
-    void add(String message, ObserverInfo<?> relatedTo);
+    void add(String message, ObserverInfo relatedTo);
 
     /**
      * Add a generic error that is represented by an exception.

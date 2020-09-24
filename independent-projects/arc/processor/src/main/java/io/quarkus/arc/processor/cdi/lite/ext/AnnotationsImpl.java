@@ -72,12 +72,12 @@ class AnnotationsImpl implements Annotations {
     }
 
     @Override
-    public AnnotationAttributeValue value(Class<? extends Enum<?>> enumType, String enumValue) {
+    public AnnotationAttributeValue value(String enumType, String enumValue) {
         return attribute(null, enumType, enumValue).value();
     }
 
     @Override
-    public AnnotationAttributeValue value(ClassInfo<?> enumType, String enumValue) {
+    public AnnotationAttributeValue value(ClassInfo enumType, String enumValue) {
         return attribute(null, enumType, enumValue).value();
     }
 
@@ -93,7 +93,7 @@ class AnnotationsImpl implements Annotations {
     }
 
     @Override
-    public AnnotationAttributeValue annotationValue(ClassInfo<?> annotationType, AnnotationAttribute... attributes) {
+    public AnnotationAttributeValue annotationValue(ClassInfo annotationType, AnnotationAttribute... attributes) {
         return annotationAttribute(null, annotationType, attributes).value();
     }
 
@@ -169,13 +169,13 @@ class AnnotationsImpl implements Annotations {
     }
 
     @Override
-    public AnnotationAttribute attribute(String name, Class<? extends Enum<?>> enumType, String enumValue) {
+    public AnnotationAttribute attribute(String name, String enumType, String enumValue) {
         return new AnnotationAttributeImpl(jandexIndex, annotationOverlays,
-                org.jboss.jandex.AnnotationValue.createEnumValue(name, DotName.createSimple(enumType.getName()), enumValue));
+                org.jboss.jandex.AnnotationValue.createEnumValue(name, DotName.createSimple(enumType), enumValue));
     }
 
     @Override
-    public AnnotationAttribute attribute(String name, ClassInfo<?> enumType, String enumValue) {
+    public AnnotationAttribute attribute(String name, ClassInfo enumType, String enumValue) {
         return new AnnotationAttributeImpl(jandexIndex, annotationOverlays,
                 org.jboss.jandex.AnnotationValue.createEnumValue(name, ((ClassInfoImpl) enumType).jandexDeclaration.name(),
                         enumValue));
@@ -219,7 +219,7 @@ class AnnotationsImpl implements Annotations {
     }
 
     @Override
-    public AnnotationAttribute annotationAttribute(String name, ClassInfo<?> annotationType,
+    public AnnotationAttribute annotationAttribute(String name, ClassInfo annotationType,
             AnnotationAttribute... attributes) {
         org.jboss.jandex.AnnotationValue[] jandexAnnotationAttributes = Arrays.stream(attributes)
                 .map(it -> ((AnnotationAttributeImpl) it).jandexAnnotationAttribute)

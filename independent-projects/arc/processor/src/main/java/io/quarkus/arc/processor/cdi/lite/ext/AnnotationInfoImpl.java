@@ -36,7 +36,7 @@ class AnnotationInfoImpl implements AnnotationInfo {
     }
 
     @Override
-    public ClassInfo<?> declaration() {
+    public ClassInfo declaration() {
         DotName annotationClassName = jandexAnnotation.name();
         org.jboss.jandex.ClassInfo annotationClass = jandexIndex.getClassByName(annotationClassName);
         if (annotationClass == null) {

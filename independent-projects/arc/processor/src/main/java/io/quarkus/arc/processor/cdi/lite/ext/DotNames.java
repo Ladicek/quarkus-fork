@@ -2,7 +2,10 @@ package io.quarkus.arc.processor.cdi.lite.ext;
 
 import cdi.lite.extension.AppArchive;
 import cdi.lite.extension.AppDeployment;
+import cdi.lite.extension.ExactType;
 import cdi.lite.extension.ExtensionPriority;
+import cdi.lite.extension.SubtypesOf;
+import cdi.lite.extension.SupertypesOf;
 import cdi.lite.extension.Types;
 import cdi.lite.extension.WithAnnotations;
 import cdi.lite.extension.beans.BeanInfo;
@@ -37,7 +40,10 @@ class DotNames {
     static final DotName SYNTHESIS = DotName.createSimple(Synthesis.class.getName());
     static final DotName VALIDATION = DotName.createSimple(Validation.class.getName());
 
+    static final DotName EXACT_TYPE = DotName.createSimple(ExactType.class.getName());
     static final DotName EXTENSION_PRIORITY = DotName.createSimple(ExtensionPriority.class.getName());
+    static final DotName SUBTYPES_OF = DotName.createSimple(SubtypesOf.class.getName());
+    static final DotName SUPERTYPES_OF = DotName.createSimple(SupertypesOf.class.getName());
     static final DotName WITH_ANNOTATIONS = DotName.createSimple(WithAnnotations.class.getName());
 
     static final DotName CLASS_INFO = DotName.createSimple(ClassInfo.class.getName());

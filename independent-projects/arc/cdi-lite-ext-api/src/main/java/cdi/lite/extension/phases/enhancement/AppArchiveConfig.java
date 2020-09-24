@@ -21,30 +21,30 @@ public interface AppArchiveConfig extends AppArchive {
 
     interface ClassConfigQuery extends ClassQuery {
         @Override
-        ClassConfigQuery exactly(Class<?> clazz);
+        ClassConfigQuery exactly(String clazz);
 
         @Override
-        ClassConfigQuery exactly(ClassInfo<?> clazz);
+        ClassConfigQuery exactly(ClassInfo clazz);
 
         @Override
-        ClassConfigQuery subtypeOf(Class<?> clazz);
+        ClassConfigQuery subtypeOf(String clazz);
 
         @Override
-        ClassConfigQuery subtypeOf(ClassInfo<?> clazz);
+        ClassConfigQuery subtypeOf(ClassInfo clazz);
 
         @Override
-        ClassConfigQuery supertypeOf(Class<?> clazz);
+        ClassConfigQuery supertypeOf(String clazz);
 
         @Override
-        ClassConfigQuery supertypeOf(ClassInfo<?> clazz);
+        ClassConfigQuery supertypeOf(ClassInfo clazz);
 
         @Override
         ClassConfigQuery annotatedWith(Class<? extends Annotation> annotationType);
 
         @Override
-        ClassConfigQuery annotatedWith(ClassInfo<?> annotationType);
+        ClassConfigQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<ClassConfig<?>> configure();
+        Collection<ClassConfig> configure();
     }
 
     interface MethodConfigQuery extends MethodQuery {
@@ -52,7 +52,7 @@ public interface AppArchiveConfig extends AppArchive {
         MethodConfigQuery declaredOn(ClassQuery classes);
 
         @Override
-        MethodConfigQuery withReturnType(Class<?> type);
+        MethodConfigQuery withReturnType(String type); // TODO remove for stringly-typed API?
 
         @Override
         MethodConfigQuery withReturnType(Type type);
@@ -61,9 +61,9 @@ public interface AppArchiveConfig extends AppArchive {
         MethodConfigQuery annotatedWith(Class<? extends Annotation> annotationType);
 
         @Override
-        MethodConfigQuery annotatedWith(ClassInfo<?> annotationType);
+        MethodConfigQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<MethodConfig<?>> configure();
+        Collection<MethodConfig> configure();
     }
 
     interface FieldConfigQuery extends FieldQuery {
@@ -71,7 +71,7 @@ public interface AppArchiveConfig extends AppArchive {
         FieldConfigQuery declaredOn(ClassQuery classes);
 
         @Override
-        FieldConfigQuery ofType(Class<?> type);
+        FieldConfigQuery ofType(String type); // TODO remove for stringly-typed API?
 
         @Override
         FieldConfigQuery ofType(Type type);
@@ -80,8 +80,8 @@ public interface AppArchiveConfig extends AppArchive {
         FieldConfigQuery annotatedWith(Class<? extends Annotation> annotationType);
 
         @Override
-        FieldConfigQuery annotatedWith(ClassInfo<?> annotationType);
+        FieldConfigQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<FieldConfig<?>> configure();
+        Collection<FieldConfig> configure();
     }
 }

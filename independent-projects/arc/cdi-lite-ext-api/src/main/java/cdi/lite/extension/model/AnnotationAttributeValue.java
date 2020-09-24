@@ -96,7 +96,7 @@ public interface AnnotationAttributeValue {
     // TODO should this be present?
     <E extends Enum<E>> E asEnum();
 
-    ClassInfo<?> asEnumClass();
+    ClassInfo asEnumClass();
 
     String asEnumValue();
 

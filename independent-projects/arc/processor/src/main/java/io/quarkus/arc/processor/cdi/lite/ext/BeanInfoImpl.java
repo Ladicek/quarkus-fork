@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 import org.jboss.jandex.IndexView;
 
-class BeanInfoImpl implements BeanInfo<Object> {
+class BeanInfoImpl implements BeanInfo {
     private final IndexView jandexIndex;
     private final AllAnnotationOverlays annotationOverlays;
     private final io.quarkus.arc.processor.BeanInfo arcBeanInfo;
@@ -48,7 +48,7 @@ class BeanInfoImpl implements BeanInfo<Object> {
     }
 
     @Override
-    public ClassInfo<?> declaringClass() {
+    public ClassInfo declaringClass() {
         // TODO getImplClass or getBeanClass?
         return new ClassInfoImpl(jandexIndex, annotationOverlays, arcBeanInfo.getImplClazz());
     }
@@ -74,7 +74,7 @@ class BeanInfoImpl implements BeanInfo<Object> {
     }
 
     @Override
-    public MethodInfo<?> producerMethod() {
+    public MethodInfo producerMethod() {
         if (arcBeanInfo.isProducerMethod()) {
             return new MethodInfoImpl(jandexIndex, annotationOverlays, arcBeanInfo.getTarget().get().asMethod());
         } else {
@@ -83,7 +83,7 @@ class BeanInfoImpl implements BeanInfo<Object> {
     }
 
     @Override
-    public FieldInfo<?> producerField() {
+    public FieldInfo producerField() {
         if (arcBeanInfo.isProducerField()) {
             return new FieldInfoImpl(jandexIndex, annotationOverlays, arcBeanInfo.getTarget().get().asField());
         } else {

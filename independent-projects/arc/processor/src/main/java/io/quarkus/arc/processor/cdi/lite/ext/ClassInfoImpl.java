@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.jboss.jandex.DotName;
 
-class ClassInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.ClassInfo> implements ClassInfo<Object> {
+class ClassInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.ClassInfo> implements ClassInfo {
     // only for equals/hashCode
     private final DotName name;
 
@@ -56,7 +56,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.ClassInfo> impl
     }
 
     @Override
-    public ClassInfo<?> superClassDeclaration() {
+    public ClassInfo superClassDeclaration() {
         return new ClassInfoImpl(jandexIndex, annotationOverlays, jandexIndex.getClassByName(jandexDeclaration.superName()));
     }
 
@@ -69,7 +69,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.ClassInfo> impl
     }
 
     @Override
-    public List<ClassInfo<?>> superInterfacesDeclarations() {
+    public List<ClassInfo> superInterfacesDeclarations() {
         return jandexDeclaration.interfaceNames()
                 .stream()
                 .map(it -> new ClassInfoImpl(jandexIndex, annotationOverlays, jandexIndex.getClassByName(it)))
@@ -113,7 +113,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.ClassInfo> impl
     }
 
     @Override
-    public Collection<MethodInfo<Object>> constructors() {
+    public Collection<MethodInfo> constructors() {
         return jandexDeclaration.methods()
                 .stream()
                 .filter(MethodPredicates.IS_CONSTRUCTOR_JANDEX)
@@ -122,7 +122,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.ClassInfo> impl
     }
 
     @Override
-    public Collection<MethodInfo<Object>> methods() {
+    public Collection<MethodInfo> methods() {
         return jandexDeclaration.methods()
                 .stream()
                 .filter(MethodPredicates.IS_METHOD_JANDEX)
@@ -131,7 +131,7 @@ class ClassInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.ClassInfo> impl
     }
 
     @Override
-    public Collection<FieldInfo<Object>> fields() {
+    public Collection<FieldInfo> fields() {
         return jandexDeclaration.fields()
                 .stream()
                 .map(it -> new FieldInfoImpl(jandexIndex, annotationOverlays, it))

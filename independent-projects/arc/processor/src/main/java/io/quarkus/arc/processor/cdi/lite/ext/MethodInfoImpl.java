@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.jboss.jandex.DotName;
 
-class MethodInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.MethodInfo> implements MethodInfo<Object> {
+class MethodInfoImpl extends DeclarationInfoImpl<org.jboss.jandex.MethodInfo> implements MethodInfo {
     // only for equals/hashCode
     private final DotName className;
     private final String name;

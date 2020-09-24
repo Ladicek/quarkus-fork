@@ -1,7 +1,7 @@
 package cdi.lite.extension.phases.discovery;
 
 public interface AppArchiveBuilder {
-    void add(Class<?> clazz);
+    void add(String clazz);
 
-    void addWithSubclasses(Class<?> clazz);
+    void addWithSubclasses(String clazz);
 }

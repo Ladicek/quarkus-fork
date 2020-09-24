@@ -5,10 +5,7 @@ import cdi.lite.extension.model.types.TypeVariable;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * @param <T> the inspected class
- */
-public interface ClassInfo<T> extends DeclarationInfo {
+public interface ClassInfo extends DeclarationInfo {
     String name();
 
     String simpleName();
@@ -19,11 +16,11 @@ public interface ClassInfo<T> extends DeclarationInfo {
 
     Type superClass();
 
-    ClassInfo<?> superClassDeclaration();
+    ClassInfo superClassDeclaration();
 
     List<Type> superInterfaces();
 
-    List<ClassInfo<?>> superInterfacesDeclarations();
+    List<ClassInfo> superInterfacesDeclarations();
 
     boolean isPlainClass();
 
@@ -39,11 +36,11 @@ public interface ClassInfo<T> extends DeclarationInfo {
 
     int modifiers();
 
-    Collection<MethodInfo<T>> constructors(); // no static initializers
+    Collection<MethodInfo> constructors(); // no static initializers
 
-    Collection<MethodInfo<T>> methods(); // no constructors nor static initializers
+    Collection<MethodInfo> methods(); // no constructors nor static initializers
 
-    Collection<FieldInfo<T>> fields();
+    Collection<FieldInfo> fields();
 
     // ---
 
@@ -53,7 +50,7 @@ public interface ClassInfo<T> extends DeclarationInfo {
     }
 
     @Override
-    default ClassInfo<?> asClass() {
+    default ClassInfo asClass() {
         return this;
     }
 }

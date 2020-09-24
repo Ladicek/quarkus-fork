@@ -28,15 +28,15 @@ public interface Annotations {
 
     AnnotationAttributeValue value(Enum<?> enumValue);
 
-    AnnotationAttributeValue value(Class<? extends Enum<?>> enumType, String enumValue);
+    AnnotationAttributeValue value(String enumType, String enumValue);
 
-    AnnotationAttributeValue value(ClassInfo<?> enumType, String enumValue);
+    AnnotationAttributeValue value(ClassInfo enumType, String enumValue);
 
-    AnnotationAttributeValue value(Class<?> value);
+    AnnotationAttributeValue value(Class<?> value); // TODO for stringly-typed API, rename and change type of `value` to `String`
 
     AnnotationAttributeValue annotationValue(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes);
 
-    AnnotationAttributeValue annotationValue(ClassInfo<?> annotationType, AnnotationAttribute... attributes);
+    AnnotationAttributeValue annotationValue(ClassInfo annotationType, AnnotationAttribute... attributes);
 
     AnnotationAttributeValue annotationValue(AnnotationInfo annotation);
 
@@ -62,11 +62,11 @@ public interface Annotations {
 
     AnnotationAttribute attribute(String name, Enum<?> enumValue);
 
-    AnnotationAttribute attribute(String name, Class<? extends Enum<?>> enumType, String enumValue);
+    AnnotationAttribute attribute(String name, String enumType, String enumValue);
 
-    AnnotationAttribute attribute(String name, ClassInfo<?> enumType, String enumValue);
+    AnnotationAttribute attribute(String name, ClassInfo enumType, String enumValue);
 
-    AnnotationAttribute attribute(String name, Class<?> value);
+    AnnotationAttribute attribute(String name, Class<?> value); // TODO for stringly-typed API, rename and change type of `value` to `String`
 
     AnnotationAttribute arrayAttribute(String name, AnnotationAttributeValue... values);
 
@@ -75,7 +75,7 @@ public interface Annotations {
     AnnotationAttribute annotationAttribute(String name, Class<? extends Annotation> annotationType,
             AnnotationAttribute... attributes);
 
-    AnnotationAttribute annotationAttribute(String name, ClassInfo<?> annotationType, AnnotationAttribute... attributes);
+    AnnotationAttribute annotationAttribute(String name, ClassInfo annotationType, AnnotationAttribute... attributes);
 
     AnnotationAttribute annotationAttribute(String name, AnnotationInfo annotation);
 

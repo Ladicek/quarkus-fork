@@ -4,7 +4,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cdi.lite.extension.AppArchive;
+import cdi.lite.extension.ExactType;
 import cdi.lite.extension.ExtensionPriority;
+import cdi.lite.extension.SubtypesOf;
+import cdi.lite.extension.SupertypesOf;
 import cdi.lite.extension.WithAnnotations;
 import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.FieldInfo;
@@ -40,8 +43,10 @@ public class ChangeQualifierTest {
     public static class MyExtension {
         @Enhancement
         @ExtensionPriority(0)
-        public void configure(ClassConfig<MyFooService> foo, ClassConfig<MyBarService> bar,
-                Collection<FieldConfig<MyServiceConsumer>> service) {
+        public void configure(
+                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyFooService") ClassConfig foo,
+                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyBarService") ClassConfig bar,
+                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyServiceConsumer") Collection<FieldConfig> service) {
 
             System.out.println("????????? " + foo.annotations());
             System.out.println("????????? " + bar.annotations());
@@ -67,16 +72,17 @@ public class ChangeQualifierTest {
         }
 
         @Enhancement
-        public void test(Collection<ClassConfig<? extends MyService>> upperBound,
-                Collection<ClassConfig<? super MyService>> lowerBound,
-                Collection<ClassConfig<MyService>> single,
-                Collection<ClassConfig<?>> all,
-                Collection<ClassInfo<?>> allAgain,
-                Collection<MethodInfo<? super MyService>> methods,
-                Collection<FieldInfo<? extends MyService>> fields,
-                ClassInfo<MyFooService> singleAgain,
-                @WithAnnotations(Inject.class) Collection<FieldInfo<?>> fieldsWithAnnotation,
-                @WithAnnotations(Enhancement.class) Collection<MethodInfo<?>> methodsWithAnnotation,
+        public void test(
+                @SubtypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<ClassConfig> upperBound,
+                @SupertypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<ClassConfig> lowerBound,
+                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<ClassConfig> single,
+                Collection<ClassConfig> all,
+                Collection<ClassInfo> allAgain,
+                @SupertypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<MethodInfo> methods,
+                @SubtypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<FieldInfo> fields,
+                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyFooService") ClassInfo singleAgain,
+                @WithAnnotations(Inject.class) Collection<FieldInfo> fieldsWithAnnotation,
+                @WithAnnotations(Enhancement.class) Collection<MethodInfo> methodsWithAnnotation,
                 AppArchive appArchive) {
 
             System.out.println("!!! upper bound");
@@ -119,7 +125,7 @@ public class ChangeQualifierTest {
 
             System.out.println("!!! world");
             appArchive.classes()
-                    .subtypeOf(MyService.class)
+                    .subtypeOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService")
                     .annotatedWith(Singleton.class)
                     .stream()
                     .forEach(System.out::println);

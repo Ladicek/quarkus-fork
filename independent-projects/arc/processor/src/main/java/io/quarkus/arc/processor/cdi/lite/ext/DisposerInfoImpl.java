@@ -18,7 +18,7 @@ class DisposerInfoImpl implements DisposerInfo {
     }
 
     @Override
-    public MethodInfo<?> disposerMethod() {
+    public MethodInfo disposerMethod() {
         org.jboss.jandex.MethodInfo jandexMethod = arcDisposerInfo.getDisposerMethod();
         return new MethodInfoImpl(jandexIndex, annotationOverlays, jandexMethod);
     }

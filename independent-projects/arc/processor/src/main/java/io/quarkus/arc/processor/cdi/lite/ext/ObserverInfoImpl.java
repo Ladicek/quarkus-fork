@@ -13,7 +13,7 @@ import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 import org.jboss.jandex.IndexView;
 
-class ObserverInfoImpl implements ObserverInfo<Object> {
+class ObserverInfoImpl implements ObserverInfo {
     private final IndexView jandexIndex;
     private final AllAnnotationOverlays annotationOverlays;
     private final io.quarkus.arc.processor.ObserverInfo arcObserverInfo;
@@ -31,13 +31,13 @@ class ObserverInfoImpl implements ObserverInfo<Object> {
     }
 
     @Override
-    public ClassInfo<?> declaringClass() {
+    public ClassInfo declaringClass() {
         org.jboss.jandex.ClassInfo jandexClass = jandexIndex.getClassByName(arcObserverInfo.getBeanClass());
         return new ClassInfoImpl(jandexIndex, annotationOverlays, jandexClass);
     }
 
     @Override
-    public MethodInfo<?> observerMethod() {
+    public MethodInfo observerMethod() {
         return new MethodInfoImpl(jandexIndex, annotationOverlays, arcObserverInfo.getObserverMethod());
     }
 
@@ -48,7 +48,7 @@ class ObserverInfoImpl implements ObserverInfo<Object> {
     }
 
     @Override
-    public BeanInfo<?> bean() {
+    public BeanInfo bean() {
         return null;
     }
 

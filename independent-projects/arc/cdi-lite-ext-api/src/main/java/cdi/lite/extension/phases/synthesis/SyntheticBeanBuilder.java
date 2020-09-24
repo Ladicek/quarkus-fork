@@ -10,19 +10,19 @@ import java.lang.annotation.Annotation;
  */
 public interface SyntheticBeanBuilder {
     // can be called multiple times and is additive
-    SyntheticBeanBuilder type(Class<?> clazz);
+    SyntheticBeanBuilder type(String clazz);
 
-    SyntheticBeanBuilder type(ClassInfo<?> clazz);
+    SyntheticBeanBuilder type(ClassInfo clazz);
 
-    SyntheticBeanBuilder typeWithTransitiveClosure(Class<?> clazz);
+    SyntheticBeanBuilder typeWithTransitiveClosure(String clazz);
 
-    SyntheticBeanBuilder typeWithTransitiveClosure(ClassInfo<?> clazz);
+    SyntheticBeanBuilder typeWithTransitiveClosure(ClassInfo clazz);
     // TODO methods to add multiple types at once?
 
     // can be called multiple times and is additive
     SyntheticBeanBuilder qualifier(Class<? extends Annotation> qualifierAnnotation, AnnotationAttribute... attributes);
 
-    SyntheticBeanBuilder qualifier(ClassInfo<?> qualifierAnnotation, AnnotationAttribute... attributes);
+    SyntheticBeanBuilder qualifier(ClassInfo qualifierAnnotation, AnnotationAttribute... attributes);
 
     SyntheticBeanBuilder qualifier(AnnotationInfo qualifierAnnotation);
 
@@ -32,7 +32,7 @@ public interface SyntheticBeanBuilder {
     // if called multiple times, last call wins
     SyntheticBeanBuilder scope(Class<? extends Annotation> scopeAnnotation);
 
-    SyntheticBeanBuilder scope(ClassInfo<?> scopeAnnotation);
+    SyntheticBeanBuilder scope(ClassInfo scopeAnnotation);
 
     // if called, priority is automatically 0, unless `priority` is also called
     // if called multiple times, last call wins
@@ -49,7 +49,7 @@ public interface SyntheticBeanBuilder {
     // can be called multiple times and is additive
     SyntheticBeanBuilder stereotype(Class<? extends Annotation> stereotypeAnnotation);
 
-    SyntheticBeanBuilder stereotype(ClassInfo<?> stereotypeAnnotation);
+    SyntheticBeanBuilder stereotype(ClassInfo stereotypeAnnotation);
 
     // TODO how to define the creation/destruction implementation?
 }

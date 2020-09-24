@@ -7,10 +7,7 @@ import cdi.lite.extension.model.declarations.MethodInfo;
 import cdi.lite.extension.model.types.Type;
 import java.util.Collection;
 
-/**
- * @param <T> type of the inspected bean (that is, not the declaring class, but one of the types the bean has)
- */
-public interface BeanInfo<T> {
+public interface BeanInfo {
     ScopeInfo scope();
 
     Collection<Type> types();
@@ -24,7 +21,7 @@ public interface BeanInfo<T> {
      * In case of a producer method or field, that is the class that declares the producer method or field.
      * TODO null for synthetic beans, or return Optional?
      */
-    ClassInfo<?> declaringClass();
+    ClassInfo declaringClass();
 
     boolean isClassBean();
 
@@ -34,9 +31,9 @@ public interface BeanInfo<T> {
 
     boolean isSynthetic();
 
-    MethodInfo<?> producerMethod(); // TODO null if not producer method, or return Optional?
+    MethodInfo producerMethod(); // TODO null if not producer method, or return Optional?
 
-    FieldInfo<?> producerField(); // TODO null if not producer field, or return Optional?
+    FieldInfo producerField(); // TODO null if not producer field, or return Optional?
 
     boolean isAlternative();
 

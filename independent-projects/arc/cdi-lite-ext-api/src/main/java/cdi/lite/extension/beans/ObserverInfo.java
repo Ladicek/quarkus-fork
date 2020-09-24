@@ -9,10 +9,7 @@ import java.util.Collection;
 import javax.enterprise.event.Reception;
 import javax.enterprise.event.TransactionPhase;
 
-/**
- * @param <T> type observed by the inspected observer
- */
-public interface ObserverInfo<T> {
+public interface ObserverInfo {
     String id(); // ???
 
     Type observedType();
@@ -20,13 +17,13 @@ public interface ObserverInfo<T> {
     // TODO method(s) for getting AnnotationInfo for given qualifier class?
     Collection<AnnotationInfo> qualifiers();
 
-    ClassInfo<?> declaringClass(); // never null, even if synthetic
+    ClassInfo declaringClass(); // never null, even if synthetic
 
-    MethodInfo<?> observerMethod(); // TODO null for synthetic observers, or return Optional? see also isSynthetic below
+    MethodInfo observerMethod(); // TODO null for synthetic observers, or return Optional? see also isSynthetic below
 
     ParameterInfo eventParameter(); // TODO null for synthetic observers, or return Optional? see also isSynthetic below
 
-    BeanInfo<?> bean(); // TODO null for synthetic observers, or return Optional? see also isSynthetic below
+    BeanInfo bean(); // TODO null for synthetic observers, or return Optional? see also isSynthetic below
 
     default boolean isSynthetic() {
         return bean() == null;

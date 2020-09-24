@@ -59,11 +59,11 @@ public interface DeclarationInfo extends AnnotationTarget {
         throw new IllegalStateException("Not a package");
     }
 
-    default ClassInfo<?> asClass() {
+    default ClassInfo asClass() {
         throw new IllegalStateException("Not a class");
     }
 
-    default MethodInfo<?> asMethod() {
+    default MethodInfo asMethod() {
         throw new IllegalStateException("Not a method");
     }
 
@@ -71,7 +71,7 @@ public interface DeclarationInfo extends AnnotationTarget {
         throw new IllegalStateException("Not a parameter");
     }
 
-    default FieldInfo<?> asField() {
+    default FieldInfo asField() {
         throw new IllegalStateException("Not a field");
     }
 }

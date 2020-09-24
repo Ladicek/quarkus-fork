@@ -7,7 +7,7 @@ import cdi.lite.extension.phases.enhancement.ClassConfig;
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
-class ClassConfigImpl extends ClassInfoImpl implements ClassConfig<Object> {
+class ClassConfigImpl extends ClassInfoImpl implements ClassConfig {
     private final AnnotationsTransformation.Classes transformations;
 
     ClassConfigImpl(org.jboss.jandex.IndexView jandexIndex, AnnotationsTransformation.Classes transformations,
@@ -22,7 +22,7 @@ class ClassConfigImpl extends ClassInfoImpl implements ClassConfig<Object> {
     }
 
     @Override
-    public void addAnnotation(ClassInfo<?> annotationType, AnnotationAttribute... attributes) {
+    public void addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes) {
         transformations.addAnnotation(jandexDeclaration, annotationType, attributes);
     }
 

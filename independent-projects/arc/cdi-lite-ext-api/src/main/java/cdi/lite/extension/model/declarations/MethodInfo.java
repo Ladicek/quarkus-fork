@@ -5,10 +5,7 @@ import cdi.lite.extension.model.types.TypeVariable;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @param <T> type of whomever declares the inspected method or constructor
- */
-public interface MethodInfo<T> extends DeclarationInfo {
+public interface MethodInfo extends DeclarationInfo {
     String name();
 
     List<ParameterInfo> parameters();
@@ -39,7 +36,7 @@ public interface MethodInfo<T> extends DeclarationInfo {
     }
 
     @Override
-    default MethodInfo<?> asMethod() {
+    default MethodInfo asMethod() {
         return this;
     }
 }

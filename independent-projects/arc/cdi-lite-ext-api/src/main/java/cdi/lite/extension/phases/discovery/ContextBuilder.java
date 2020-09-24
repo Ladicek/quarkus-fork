@@ -30,7 +30,7 @@ public interface ContextBuilder {
      * they don't have to accept all implementations of {@link AlterableContext}.
      */
     // if called multiple times, last call wins
-    ContextBuilder implementation(Class<? extends AlterableContext> implementationClass);
+    ContextBuilder implementation(String implementationClass);
 
     // TODO another way to define the context implementation?
 }

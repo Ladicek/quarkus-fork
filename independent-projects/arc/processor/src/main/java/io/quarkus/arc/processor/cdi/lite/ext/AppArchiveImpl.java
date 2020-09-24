@@ -6,6 +6,7 @@ import cdi.lite.extension.model.declarations.FieldInfo;
 import cdi.lite.extension.model.declarations.MethodInfo;
 import cdi.lite.extension.model.types.Type;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,18 +58,18 @@ class AppArchiveImpl implements AppArchive {
         private Set<DotName> requiredJandexAnnotations;
 
         @Override
-        public ClassQuery exactly(Class<?> clazz) {
+        public ClassQuery exactly(String clazz) {
             if (requiredJandexClasses == null) {
                 requiredJandexClasses = new HashSet<>();
             }
 
-            requiredJandexClasses.add(DotName.createSimple(clazz.getName()));
+            requiredJandexClasses.add(DotName.createSimple(clazz));
 
             return this;
         }
 
         @Override
-        public ClassQuery exactly(ClassInfo<?> clazz) {
+        public ClassQuery exactly(ClassInfo clazz) {
             if (requiredJandexClasses == null) {
                 requiredJandexClasses = new HashSet<>();
             }
@@ -79,19 +80,20 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public ClassQuery subtypeOf(Class<?> clazz) {
+        public ClassQuery subtypeOf(String clazz) {
             if (requiredJandexClasses == null) {
                 requiredJandexClasses = new HashSet<>();
             }
 
-            DotName name = DotName.createSimple(clazz.getName());
-            addSubClassesToRequiredClassesSet(name, clazz.isInterface());
+            DotName name = DotName.createSimple(clazz);
+            boolean isInterface = Modifier.isInterface(jandexIndex.getClassByName(name).flags());
+            addSubClassesToRequiredClassesSet(name, isInterface);
 
             return this;
         }
 
         @Override
-        public ClassQuery subtypeOf(ClassInfo<?> clazz) {
+        public ClassQuery subtypeOf(ClassInfo clazz) {
             if (requiredJandexClasses == null) {
                 requiredJandexClasses = new HashSet<>();
             }
@@ -118,19 +120,19 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public ClassQuery supertypeOf(Class<?> clazz) {
+        public ClassQuery supertypeOf(String clazz) {
             if (requiredJandexClasses == null) {
                 requiredJandexClasses = new HashSet<>();
             }
 
-            DotName name = DotName.createSimple(clazz.getName());
+            DotName name = DotName.createSimple(clazz);
             addSuperClassesToRequiredClassesSet(name);
 
             return this;
         }
 
         @Override
-        public ClassQuery supertypeOf(ClassInfo<?> clazz) {
+        public ClassQuery supertypeOf(ClassInfo clazz) {
             if (requiredJandexClasses == null) {
                 requiredJandexClasses = new HashSet<>();
             }
@@ -166,7 +168,7 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public ClassQuery annotatedWith(ClassInfo<?> annotationType) {
+        public ClassQuery annotatedWith(ClassInfo annotationType) {
             if (requiredJandexAnnotations == null) {
                 requiredJandexAnnotations = new HashSet<>();
             }
@@ -177,12 +179,12 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public Collection<ClassInfo<?>> find() {
+        public Collection<ClassInfo> find() {
             return stream().collect(Collectors.toList());
         }
 
         @Override
-        public Stream<ClassInfo<?>> stream() {
+        public Stream<ClassInfo> stream() {
             if (requiredJandexClasses != null && requiredJandexAnnotations != null) {
                 return requiredJandexClasses.stream()
                         .map(jandexIndex::getClassByName)
@@ -200,9 +202,9 @@ class AppArchiveImpl implements AppArchive {
                         .map(jandexIndex::getClassByName)
                         .map(it -> new ClassInfoImpl(jandexIndex, annotationOverlays, it));
             } else if (requiredJandexAnnotations != null) {
-                Stream<ClassInfo<?>> result = null;
+                Stream<ClassInfo> result = null;
                 for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                    Stream<ClassInfo<?>> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
+                    Stream<ClassInfo> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
                             .stream()
                             .filter(it -> it.target().kind() == org.jboss.jandex.AnnotationTarget.Kind.CLASS)
                             .map(it -> it.target().asClass())
@@ -231,7 +233,7 @@ class AppArchiveImpl implements AppArchive {
 
     class MethodQueryImpl implements MethodQuery {
         private final Predicate<String> nameFilter;
-        private Stream<ClassInfo<?>> requiredDeclarationSites; // elements not guaranteed to be distinct!
+        private Stream<ClassInfo> requiredDeclarationSites; // elements not guaranteed to be distinct!
         private Set<org.jboss.jandex.Type> requiredJandexReturnTypes;
         private Set<DotName> requiredJandexAnnotations;
 
@@ -251,7 +253,7 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public MethodQuery withReturnType(Class<?> type) {
+        public MethodQuery withReturnType(String type) {
             if (requiredJandexReturnTypes == null) {
                 requiredJandexReturnTypes = new HashSet<>();
             }
@@ -284,7 +286,7 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public MethodQuery annotatedWith(ClassInfo<?> annotationType) {
+        public MethodQuery annotatedWith(ClassInfo annotationType) {
             if (requiredJandexAnnotations == null) {
                 requiredJandexAnnotations = new HashSet<>();
             }
@@ -295,12 +297,12 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public Collection<MethodInfo<?>> find() {
+        public Collection<MethodInfo> find() {
             return stream().collect(Collectors.toList());
         }
 
         @Override
-        public Stream<MethodInfo<?>> stream() {
+        public Stream<MethodInfo> stream() {
             if (requiredDeclarationSites != null && requiredJandexReturnTypes != null && requiredJandexAnnotations != null) {
                 return requiredDeclarationSites
                         .flatMap(it -> it.methods().stream())
@@ -368,9 +370,9 @@ class AppArchiveImpl implements AppArchive {
                         .filter(it -> requiredJandexReturnTypes.contains(it.returnType()))
                         .map(it -> new MethodInfoImpl(jandexIndex, annotationOverlays, it));
             } else if (requiredJandexAnnotations != null) {
-                Stream<MethodInfo<?>> result = null;
+                Stream<MethodInfo> result = null;
                 for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                    Stream<MethodInfo<?>> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
+                    Stream<MethodInfo> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
                             .stream()
                             .filter(it -> it.target().kind() == org.jboss.jandex.AnnotationTarget.Kind.METHOD)
                             .map(it -> it.target().asMethod())
@@ -401,7 +403,7 @@ class AppArchiveImpl implements AppArchive {
     }
 
     class FieldQueryImpl implements FieldQuery {
-        private Stream<ClassInfo<?>> requiredDeclarationSites; // elements not guaranteed to be distinct!
+        private Stream<ClassInfo> requiredDeclarationSites; // elements not guaranteed to be distinct!
         private Set<org.jboss.jandex.Type> requiredJandexTypes;
         private Set<DotName> requiredJandexAnnotations;
 
@@ -417,7 +419,7 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public FieldQuery ofType(Class<?> type) {
+        public FieldQuery ofType(String type) {
             if (requiredJandexTypes == null) {
                 requiredJandexTypes = new HashSet<>();
             }
@@ -450,7 +452,7 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public FieldQuery annotatedWith(ClassInfo<?> annotationType) {
+        public FieldQuery annotatedWith(ClassInfo annotationType) {
             if (requiredJandexAnnotations == null) {
                 requiredJandexAnnotations = new HashSet<>();
             }
@@ -461,12 +463,12 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public Collection<FieldInfo<?>> find() {
+        public Collection<FieldInfo> find() {
             return stream().collect(Collectors.toList());
         }
 
         @Override
-        public Stream<FieldInfo<?>> stream() {
+        public Stream<FieldInfo> stream() {
             if (requiredDeclarationSites != null && requiredJandexTypes != null && requiredJandexAnnotations != null) {
                 return requiredDeclarationSites
                         .flatMap(it -> it.fields().stream())
@@ -528,9 +530,9 @@ class AppArchiveImpl implements AppArchive {
                         .filter(it -> requiredJandexTypes.contains(it.type()))
                         .map(it -> new FieldInfoImpl(jandexIndex, annotationOverlays, it));
             } else if (requiredJandexAnnotations != null) {
-                Stream<FieldInfo<?>> result = null;
+                Stream<FieldInfo> result = null;
                 for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                    Stream<FieldInfo<?>> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
+                    Stream<FieldInfo> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
                             .stream()
                             .filter(it -> it.target().kind() == org.jboss.jandex.AnnotationTarget.Kind.FIELD)
                             .map(it -> it.target().asField())

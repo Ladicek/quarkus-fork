@@ -63,25 +63,25 @@ public interface AppDeployment {
     interface BeanQuery {
         BeanQuery scope(Class<? extends Annotation> scopeAnnotation);
 
-        BeanQuery scope(ClassInfo<?> scopeAnnotation);
+        BeanQuery scope(ClassInfo scopeAnnotation);
 
-        BeanQuery type(Class<?> beanType);
+        BeanQuery type(String beanType);
 
-        BeanQuery type(ClassInfo<?> beanType);
+        BeanQuery type(ClassInfo beanType);
 
         BeanQuery type(Type beanType);
 
         BeanQuery qualifier(Class<? extends Annotation> qualifierAnnotation);
 
-        BeanQuery qualifier(ClassInfo<?> qualifierAnnotation);
+        BeanQuery qualifier(ClassInfo qualifierAnnotation);
 
-        BeanQuery declaringClass(Class<?> declarationClass);
+        BeanQuery declaringClass(String declarationClass);
 
-        BeanQuery declaringClass(ClassInfo<?> declarationClass);
+        BeanQuery declaringClass(ClassInfo declarationClass);
 
-        Collection<BeanInfo<?>> find();
+        Collection<BeanInfo> find();
 
-        Stream<BeanInfo<?>> stream();
+        Stream<BeanInfo> stream();
     }
 
     /**
@@ -119,22 +119,22 @@ public interface AppDeployment {
      * returns all observers declared on the {@code Foo} class or the {@code Bar} class.
      */
     interface ObserverQuery {
-        ObserverQuery observedType(Class<?> beanType);
+        ObserverQuery observedType(String beanType);
 
-        ObserverQuery observedType(ClassInfo<?> beanType);
+        ObserverQuery observedType(ClassInfo beanType);
 
         ObserverQuery observedType(Type beanType);
 
         ObserverQuery qualifier(Class<? extends Annotation> qualifierAnnotation);
 
-        ObserverQuery qualifier(ClassInfo<?> qualifierAnnotation);
+        ObserverQuery qualifier(ClassInfo qualifierAnnotation);
 
-        ObserverQuery declaringClass(Class<?> declarationClass);
+        ObserverQuery declaringClass(String declarationClass);
 
-        ObserverQuery declaringClass(ClassInfo<?> declarationClass);
+        ObserverQuery declaringClass(ClassInfo declarationClass);
 
-        Collection<ObserverInfo<?>> find();
+        Collection<ObserverInfo> find();
 
-        Stream<ObserverInfo<?>> stream();
+        Stream<ObserverInfo> stream();
     }
 }

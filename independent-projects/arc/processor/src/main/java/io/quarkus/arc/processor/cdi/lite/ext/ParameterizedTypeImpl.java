@@ -13,7 +13,7 @@ class ParameterizedTypeImpl extends TypeImpl<org.jboss.jandex.ParameterizedType>
     }
 
     @Override
-    public ClassInfo<?> declaration() {
+    public ClassInfo declaration() {
         return new ClassInfoImpl(jandexIndex, annotationOverlays, jandexIndex.getClassByName(jandexType.name()));
     }
 

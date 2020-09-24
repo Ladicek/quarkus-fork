@@ -15,7 +15,7 @@ public interface AnnotationInfo {
     /**
      * Declaration of the annotation itself.
      */
-    ClassInfo<?> declaration();
+    ClassInfo declaration();
 
     /**
      * Fully qualified name of the annotation.

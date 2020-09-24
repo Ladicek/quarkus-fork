@@ -37,37 +37,37 @@ class AppArchiveConfigImpl extends AppArchiveImpl implements AppArchiveConfig {
 
     private class ClassConfigQueryImpl extends ClassQueryImpl implements ClassConfigQuery {
         @Override
-        public ClassConfigQuery exactly(Class<?> clazz) {
+        public ClassConfigQuery exactly(String clazz) {
             super.exactly(clazz);
             return this;
         }
 
         @Override
-        public ClassConfigQuery exactly(ClassInfo<?> clazz) {
+        public ClassConfigQuery exactly(ClassInfo clazz) {
             super.exactly(clazz);
             return this;
         }
 
         @Override
-        public ClassConfigQuery subtypeOf(Class<?> clazz) {
+        public ClassConfigQuery subtypeOf(String clazz) {
             super.subtypeOf(clazz);
             return this;
         }
 
         @Override
-        public ClassConfigQuery subtypeOf(ClassInfo<?> clazz) {
+        public ClassConfigQuery subtypeOf(ClassInfo clazz) {
             super.subtypeOf(clazz);
             return this;
         }
 
         @Override
-        public ClassConfigQuery supertypeOf(Class<?> clazz) {
+        public ClassConfigQuery supertypeOf(String clazz) {
             super.supertypeOf(clazz);
             return this;
         }
 
         @Override
-        public ClassConfigQuery supertypeOf(ClassInfo<?> clazz) {
+        public ClassConfigQuery supertypeOf(ClassInfo clazz) {
             super.supertypeOf(clazz);
             return this;
         }
@@ -79,13 +79,13 @@ class AppArchiveConfigImpl extends AppArchiveImpl implements AppArchiveConfig {
         }
 
         @Override
-        public ClassConfigQuery annotatedWith(ClassInfo<?> annotationType) {
+        public ClassConfigQuery annotatedWith(ClassInfo annotationType) {
             super.annotatedWith(annotationType);
             return this;
         }
 
         @Override
-        public Collection<ClassConfig<?>> configure() {
+        public Collection<ClassConfig> configure() {
             return stream()
                     .map(it -> new ClassConfigImpl(jandexIndex, annotationTransformations.classes,
                             ((ClassInfoImpl) it).jandexDeclaration))
@@ -105,7 +105,7 @@ class AppArchiveConfigImpl extends AppArchiveImpl implements AppArchiveConfig {
         }
 
         @Override
-        public MethodConfigQuery withReturnType(Class<?> type) {
+        public MethodConfigQuery withReturnType(String type) {
             super.withReturnType(type);
             return this;
         }
@@ -123,13 +123,13 @@ class AppArchiveConfigImpl extends AppArchiveImpl implements AppArchiveConfig {
         }
 
         @Override
-        public MethodConfigQuery annotatedWith(ClassInfo<?> annotationType) {
+        public MethodConfigQuery annotatedWith(ClassInfo annotationType) {
             super.annotatedWith(annotationType);
             return this;
         }
 
         @Override
-        public Collection<MethodConfig<?>> configure() {
+        public Collection<MethodConfig> configure() {
             return stream()
                     .map(it -> new MethodConfigImpl(jandexIndex, annotationTransformations.methods,
                             ((MethodInfoImpl) it).jandexDeclaration))
@@ -145,7 +145,7 @@ class AppArchiveConfigImpl extends AppArchiveImpl implements AppArchiveConfig {
         }
 
         @Override
-        public FieldConfigQuery ofType(Class<?> type) {
+        public FieldConfigQuery ofType(String type) {
             super.ofType(type);
             return this;
         }
@@ -163,13 +163,13 @@ class AppArchiveConfigImpl extends AppArchiveImpl implements AppArchiveConfig {
         }
 
         @Override
-        public FieldConfigQuery annotatedWith(ClassInfo<?> annotationType) {
+        public FieldConfigQuery annotatedWith(ClassInfo annotationType) {
             super.annotatedWith(annotationType);
             return this;
         }
 
         @Override
-        public Collection<FieldConfig<?>> configure() {
+        public Collection<FieldConfig> configure() {
             return stream()
                     .map(it -> new FieldConfigImpl(jandexIndex, annotationTransformations.fields,
                             ((FieldInfoImpl) it).jandexDeclaration))

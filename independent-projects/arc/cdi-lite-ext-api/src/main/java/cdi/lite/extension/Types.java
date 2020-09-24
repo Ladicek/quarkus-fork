@@ -16,19 +16,19 @@ public interface Types {
      * <li>{@code of(String[][].class)}: same as {@code ofArray(ofClass(... ClassInfo for String ...), 2)}</li>
      * </ul>
      */
-    Type of(Class<?> clazz);
+    Type of(Class<?> clazz); // TODO probably remove for the stringly-typed API?
 
     Type ofVoid();
 
     Type ofPrimitive(PrimitiveType.PrimitiveKind kind);
 
-    Type ofClass(ClassInfo<?> clazz);
+    Type ofClass(String clazz);
+
+    Type ofClass(ClassInfo clazz);
 
     Type ofArray(Type componentType, int dimensions);
 
-    Type parameterized(Class<?> parameterizedType, Class<?>... typeArguments);
-
-    Type parameterized(Class<?> parameterizedType, Type... typeArguments);
+    Type parameterized(String parameterizedType, Type... typeArguments);
 
     Type parameterized(Type parameterizedType, Type... typeArguments);
 

@@ -118,7 +118,7 @@ class AnnotationAttributeValueImpl implements AnnotationAttributeValue {
     }
 
     @Override
-    public ClassInfo<?> asEnumClass() {
+    public ClassInfo asEnumClass() {
         return new ClassInfoImpl(jandexIndex, annotationOverlays,
                 jandexIndex.getClassByName(jandexAnnotationAttribute.asEnumType()));
     }

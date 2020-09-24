@@ -41,25 +41,25 @@ public interface AppArchive {
      * returns all classes annotated either with {@code @Foo} or with {@code @Bar} (or both).
      */
     interface ClassQuery {
-        ClassQuery exactly(Class<?> clazz);
+        ClassQuery exactly(String clazz);
 
-        ClassQuery exactly(ClassInfo<?> clazz);
+        ClassQuery exactly(ClassInfo clazz);
 
-        ClassQuery subtypeOf(Class<?> clazz);
+        ClassQuery subtypeOf(String clazz);
 
-        ClassQuery subtypeOf(ClassInfo<?> clazz);
+        ClassQuery subtypeOf(ClassInfo clazz);
 
-        ClassQuery supertypeOf(Class<?> clazz);
+        ClassQuery supertypeOf(String clazz);
 
-        ClassQuery supertypeOf(ClassInfo<?> clazz);
+        ClassQuery supertypeOf(ClassInfo clazz);
 
         ClassQuery annotatedWith(Class<? extends Annotation> annotationType);
 
-        ClassQuery annotatedWith(ClassInfo<?> annotationType);
+        ClassQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<ClassInfo<?>> find();
+        Collection<ClassInfo> find();
 
-        Stream<ClassInfo<?>> stream();
+        Stream<ClassInfo> stream();
     }
 
     /**
@@ -109,7 +109,7 @@ public interface AppArchive {
         /**
          * Equivalent to {@code withReturnType(types.of(type))}, where {@code types} is {@link Types}.
          */
-        MethodQuery withReturnType(Class<?> type);
+        MethodQuery withReturnType(String type); // TODO remove for stringly-typed API?
 
         MethodQuery withReturnType(Type type);
 
@@ -117,11 +117,11 @@ public interface AppArchive {
 
         MethodQuery annotatedWith(Class<? extends Annotation> annotationType);
 
-        MethodQuery annotatedWith(ClassInfo<?> annotationType);
+        MethodQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<MethodInfo<?>> find();
+        Collection<MethodInfo> find();
 
-        Stream<MethodInfo<?>> stream();
+        Stream<MethodInfo> stream();
     }
 
     /**
@@ -171,16 +171,16 @@ public interface AppArchive {
         /**
          * Equivalent to {@code ofType(types.of(type))}, where {@code types} is {@link Types}.
          */
-        FieldQuery ofType(Class<?> type);
+        FieldQuery ofType(String type); // TODO remove for stringly-typed API?
 
         FieldQuery ofType(Type type);
 
         FieldQuery annotatedWith(Class<? extends Annotation> annotationType);
 
-        FieldQuery annotatedWith(ClassInfo<?> annotationType);
+        FieldQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<FieldInfo<?>> find();
+        Collection<FieldInfo> find();
 
-        Stream<FieldInfo<?>> stream();
+        Stream<FieldInfo> stream();
     }
 }
