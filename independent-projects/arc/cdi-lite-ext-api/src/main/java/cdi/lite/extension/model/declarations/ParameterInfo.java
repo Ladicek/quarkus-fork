@@ -2,9 +2,14 @@ package cdi.lite.extension.model.declarations;
 
 import cdi.lite.extension.model.types.Type;
 
-public interface ParameterInfo extends DeclarationInfo {
-    String name(); // TODO doesn't have to be present
-
+// Graeme comments start
+// -------------
+// Roughly equivalent to Micronaut's ParameterElement:
+// https://docs.micronaut.io/latest/api/io/micronaut/inject/ast/ParameterElement.html
+//
+// -------------
+// Graeme comments end
+public interface ParameterInfo extends DeclarationInfo, NamedInfo {
     Type type();
 
     // ---

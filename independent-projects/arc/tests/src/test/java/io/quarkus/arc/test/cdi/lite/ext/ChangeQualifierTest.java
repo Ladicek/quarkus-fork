@@ -4,15 +4,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import cdi.lite.extension.AppArchive;
-import cdi.lite.extension.ExactType;
 import cdi.lite.extension.ExtensionPriority;
-import cdi.lite.extension.SubtypesOf;
-import cdi.lite.extension.SupertypesOf;
-import cdi.lite.extension.WithAnnotations;
 import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.FieldInfo;
 import cdi.lite.extension.model.declarations.MethodInfo;
-import cdi.lite.extension.phases.Enhancement;
 import cdi.lite.extension.phases.enhancement.ClassConfig;
 import cdi.lite.extension.phases.enhancement.FieldConfig;
 import io.quarkus.arc.Arc;
@@ -41,12 +36,11 @@ public class ChangeQualifierTest {
     }
 
     public static class MyExtension {
-        @Enhancement
         @ExtensionPriority(0)
         public void configure(
-                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyFooService") ClassConfig foo,
-                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyBarService") ClassConfig bar,
-                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyServiceConsumer") Collection<FieldConfig> service) {
+                ClassConfig foo,
+                ClassConfig bar,
+                Collection<FieldConfig> service) {
 
             System.out.println("????????? " + foo.annotations());
             System.out.println("????????? " + bar.annotations());
@@ -71,18 +65,17 @@ public class ChangeQualifierTest {
                     .collect(Collectors.toSet()));
         }
 
-        @Enhancement
         public void test(
-                @SubtypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<ClassConfig> upperBound,
-                @SupertypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<ClassConfig> lowerBound,
-                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<ClassConfig> single,
+                Collection<ClassConfig> upperBound,
+                Collection<ClassConfig> lowerBound,
+                Collection<ClassConfig> single,
                 Collection<ClassConfig> all,
                 Collection<ClassInfo> allAgain,
-                @SupertypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<MethodInfo> methods,
-                @SubtypesOf("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyService") Collection<FieldInfo> fields,
-                @ExactType("io.quarkus.arc.test.cdi.lite.ext.ChangeQualifierTest$MyFooService") ClassInfo singleAgain,
-                @WithAnnotations(Inject.class) Collection<FieldInfo> fieldsWithAnnotation,
-                @WithAnnotations(Enhancement.class) Collection<MethodInfo> methodsWithAnnotation,
+                Collection<MethodInfo> methods,
+                Collection<FieldInfo> fields,
+                ClassInfo singleAgain,
+                Collection<FieldInfo> fieldsWithAnnotation,
+                Collection<MethodInfo> methodsWithAnnotation,
                 AppArchive appArchive) {
 
             System.out.println("!!! upper bound");

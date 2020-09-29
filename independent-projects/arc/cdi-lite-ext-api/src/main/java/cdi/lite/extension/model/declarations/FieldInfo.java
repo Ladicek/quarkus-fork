@@ -2,8 +2,14 @@ package cdi.lite.extension.model.declarations;
 
 import cdi.lite.extension.model.types.Type;
 
-public interface FieldInfo extends DeclarationInfo {
-    String name();
+// Graeme comments start
+// -------------
+// Roughly equivalent to Micronaut's FieldElement:
+// https://docs.micronaut.io/latest/api/io/micronaut/inject/ast/FieldElement.html
+//
+// -------------
+// Graeme comments end
+public interface FieldInfo extends DeclarationInfo, NamedInfo {
 
     Type type();
 

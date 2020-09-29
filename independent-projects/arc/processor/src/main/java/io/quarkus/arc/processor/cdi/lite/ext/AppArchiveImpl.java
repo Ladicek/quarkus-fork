@@ -1,19 +1,23 @@
 package io.quarkus.arc.processor.cdi.lite.ext;
 
 import cdi.lite.extension.AppArchive;
+import cdi.lite.extension.Types;
 import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.FieldInfo;
 import cdi.lite.extension.model.declarations.MethodInfo;
 import cdi.lite.extension.model.types.Type;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Function;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import cdi.lite.extension.phases.enhancement.AppArchiveConfig;
+import cdi.lite.extension.phases.enhancement.ClassConfig;
+import cdi.lite.extension.phases.enhancement.FieldConfig;
+import cdi.lite.extension.phases.enhancement.MethodConfig;
 import org.jboss.jandex.DotName;
 
 class AppArchiveImpl implements AppArchive {
@@ -23,6 +27,7 @@ class AppArchiveImpl implements AppArchive {
     final AnnotationsOverlay.Classes classesOverlay;
     final AnnotationsOverlay.Methods methodsOverlay;
     final AnnotationsOverlay.Fields fieldsOverlay;
+    final TypesImpl types;
 
     AppArchiveImpl(org.jboss.jandex.IndexView jandexIndex, AllAnnotationTransformations annotationTransformations) {
         this.jandexIndex = jandexIndex;
@@ -31,6 +36,12 @@ class AppArchiveImpl implements AppArchive {
         this.classesOverlay = annotationTransformations.annotationOverlays.classes;
         this.methodsOverlay = annotationTransformations.annotationOverlays.methods;
         this.fieldsOverlay = annotationTransformations.annotationOverlays.fields;
+        this.types = new TypesImpl(jandexIndex, annotationOverlays);
+    }
+
+    @Override
+    public Types types() {
+        return types;
     }
 
     @Override
@@ -54,8 +65,8 @@ class AppArchiveImpl implements AppArchive {
     }
 
     class ClassQueryImpl implements ClassQuery {
-        private Set<DotName> requiredJandexClasses;
-        private Set<DotName> requiredJandexAnnotations;
+        protected Set<DotName> requiredJandexClasses;
+        protected Set<DotName> requiredJandexAnnotations;
 
         @Override
         public ClassQuery exactly(String clazz) {
@@ -75,6 +86,17 @@ class AppArchiveImpl implements AppArchive {
             }
 
             requiredJandexClasses.add(((ClassInfoImpl) clazz).jandexDeclaration.name());
+
+            return this;
+        }
+
+        @Override
+        public ClassQuery exactly(Type ref) {
+            if (requiredJandexClasses == null) {
+                requiredJandexClasses = new HashSet<>();
+            }
+
+            requiredJandexClasses.add(((TypeImpl<?>)ref).jandexType.name());
 
             return this;
         }
@@ -101,6 +123,19 @@ class AppArchiveImpl implements AppArchive {
             DotName name = ((ClassInfoImpl) clazz).jandexDeclaration.name();
             addSubClassesToRequiredClassesSet(name, clazz.isInterface());
 
+            return this;
+        }
+
+        @Override
+        public ClassQuery subtypeOf(Type ref) {
+            if (requiredJandexClasses == null) {
+                requiredJandexClasses = new HashSet<>();
+            }
+
+
+            DotName name = ((TypeImpl<?>) ref).jandexType.name();
+            boolean isInterface = ref.isClass() && ref.asClass().declaration().isInterface();
+            addSubClassesToRequiredClassesSet(name, isInterface);
             return this;
         }
 
@@ -143,6 +178,17 @@ class AppArchiveImpl implements AppArchive {
             return this;
         }
 
+        @Override
+        public ClassQuery supertypeOf(Type ref) {
+            if (requiredJandexClasses == null) {
+                requiredJandexClasses = new HashSet<>();
+            }
+
+            DotName name = ((TypeImpl<?>) ref).jandexType.name();
+            addSuperClassesToRequiredClassesSet(name);
+            return this;
+        }
+
         private void addSuperClassesToRequiredClassesSet(DotName name) {
             while (name != null) {
                 org.jboss.jandex.ClassInfo jandexClass = jandexIndex.getClassByName(name);
@@ -168,6 +214,17 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
+        public ClassQuery annotatedWith(String annotationName) {
+            if (requiredJandexAnnotations == null) {
+                requiredJandexAnnotations = new HashSet<>();
+            }
+
+            requiredJandexAnnotations.add(DotName.createSimple(annotationName));
+
+            return this;
+        }
+
+        @Override
         public ClassQuery annotatedWith(ClassInfo annotationType) {
             if (requiredJandexAnnotations == null) {
                 requiredJandexAnnotations = new HashSet<>();
@@ -179,12 +236,17 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public Collection<ClassInfo> find() {
-            return stream().collect(Collectors.toList());
+        public ClassQuery annotatedWith(Type annotationType) {
+            if (requiredJandexAnnotations == null) {
+                requiredJandexAnnotations = new HashSet<>();
+            }
+
+            requiredJandexAnnotations.add(((TypeImpl) annotationType).jandexType.name());
+
+            return this;
         }
 
-        @Override
-        public Stream<ClassInfo> stream() {
+        protected Stream<ClassInfo> stream() {
             if (requiredJandexClasses != null && requiredJandexAnnotations != null) {
                 return requiredJandexClasses.stream()
                         .map(jandexIndex::getClassByName)
@@ -229,13 +291,20 @@ class AppArchiveImpl implements AppArchive {
                         .map(it -> new ClassInfoImpl(jandexIndex, annotationOverlays, it));
             }
         }
+
+        @Override
+        public ClassQuery process(Consumer<ClassInfo> annotationConfig) {
+            stream()
+                    .forEach(annotationConfig);
+            return this;
+        }
     }
 
     class MethodQueryImpl implements MethodQuery {
-        private final Predicate<String> nameFilter;
-        private Stream<ClassInfo> requiredDeclarationSites; // elements not guaranteed to be distinct!
-        private Set<org.jboss.jandex.Type> requiredJandexReturnTypes;
-        private Set<DotName> requiredJandexAnnotations;
+        final Predicate<String> nameFilter;
+        List<ClassQuery> requiredDeclarationSites; // elements not guaranteed to be distinct!
+        Set<org.jboss.jandex.Type> requiredJandexReturnTypes;
+        Set<DotName> requiredJandexAnnotations;
 
         MethodQueryImpl(boolean constructors) {
             this.nameFilter = constructors ? MethodPredicates.IS_CONSTRUCTOR : MethodPredicates.IS_METHOD;
@@ -244,11 +313,9 @@ class AppArchiveImpl implements AppArchive {
         @Override
         public MethodQuery declaredOn(ClassQuery classes) {
             if (requiredDeclarationSites == null) {
-                requiredDeclarationSites = classes.stream();
-            } else {
-                requiredDeclarationSites = Stream.concat(requiredDeclarationSites, classes.stream());
+                requiredDeclarationSites = new ArrayList<>();
             }
-
+            requiredDeclarationSites.add(classes);
             return this;
         }
 
@@ -297,123 +364,74 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public Collection<MethodInfo> find() {
-            return stream().collect(Collectors.toList());
+        public MethodQuery annotatedWith(Type annotationType) {
+            if (requiredJandexAnnotations == null) {
+                requiredJandexAnnotations = new HashSet<>();
+            }
+
+            requiredJandexAnnotations.add(((TypeImpl) annotationType).jandexType.name());
+
+            return this;
+        }
+
+        protected Stream<MethodInfo> applyFilters(Stream<MethodInfo> methods) {
+            methods = methods.filter(it -> nameFilter.test(it.name()));
+            if (requiredJandexReturnTypes != null) {
+                methods = methods.filter(it -> requiredJandexReturnTypes.contains(((MethodInfoImpl) it).jandexDeclaration.returnType()));
+            }
+            if (requiredJandexAnnotations != null) {
+                methods = methods.filter(it -> {
+                    for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
+                        if (methodsOverlay.hasAnnotation(((MethodInfoImpl) it).jandexDeclaration,
+                                requiredJandexAnnotation)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            }
+            return methods;
         }
 
         @Override
-        public Stream<MethodInfo> stream() {
-            if (requiredDeclarationSites != null && requiredJandexReturnTypes != null && requiredJandexAnnotations != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.methods().stream())
-                        .filter(it -> nameFilter.test(it.name()))
-                        .filter(it -> requiredJandexReturnTypes.contains(((MethodInfoImpl) it).jandexDeclaration.returnType()))
-                        .filter(it -> {
-                            for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                                if (methodsOverlay.hasAnnotation(((MethodInfoImpl) it).jandexDeclaration,
-                                        requiredJandexAnnotation)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredDeclarationSites != null && requiredJandexReturnTypes != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.methods().stream())
-                        .filter(it -> nameFilter.test(it.name()))
-                        .filter(it -> requiredJandexReturnTypes.contains(((MethodInfoImpl) it).jandexDeclaration.returnType()))
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredDeclarationSites != null && requiredJandexAnnotations != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.methods().stream())
-                        .filter(it -> nameFilter.test(it.name()))
-                        .filter(it -> {
-                            for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                                if (methodsOverlay.hasAnnotation(((MethodInfoImpl) it).jandexDeclaration,
-                                        requiredJandexAnnotation)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredDeclarationSites != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.methods().stream())
-                        .filter(it -> nameFilter.test(it.name()))
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredJandexReturnTypes != null && requiredJandexAnnotations != null) {
-                return jandexIndex.getKnownClasses()
-                        .stream()
-                        .flatMap(it -> it.methods().stream())
-                        .filter(it -> nameFilter.test(it.name()))
-                        .filter(it -> requiredJandexReturnTypes.contains(it.returnType()))
-                        .filter(it -> {
-                            for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                                if (methodsOverlay.hasAnnotation(it, requiredJandexAnnotation)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .map(it -> new MethodInfoImpl(jandexIndex, annotationOverlays, it));
-            } else if (requiredJandexReturnTypes != null) {
-                return jandexIndex.getKnownClasses()
-                        .stream()
-                        .flatMap(it -> it.methods().stream())
-                        .filter(it -> nameFilter.test(it.name()))
-                        .filter(it -> requiredJandexReturnTypes.contains(it.returnType()))
-                        .map(it -> new MethodInfoImpl(jandexIndex, annotationOverlays, it));
-            } else if (requiredJandexAnnotations != null) {
-                Stream<MethodInfo> result = null;
-                for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                    Stream<MethodInfo> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
-                            .stream()
-                            .filter(it -> it.target().kind() == org.jboss.jandex.AnnotationTarget.Kind.METHOD)
-                            .map(it -> it.target().asMethod())
-                            .filter(it -> nameFilter.test(it.name()))
-                            .filter(it -> methodsOverlay.hasAnnotation(it, requiredJandexAnnotation))
-                            .map(it -> new MethodInfoImpl(jandexIndex, annotationOverlays, it));
-                    if (result == null) {
-                        result = partialResult;
-                    } else {
-                        result = Stream.concat(result, partialResult);
-                    }
-
-                    Stream<MethodInfoImpl> fromOverlay = methodsOverlay
-                            .overlaidDeclarationsWithAnnotation(requiredJandexAnnotation)
-                            .stream()
-                            .map(it -> new MethodInfoImpl(jandexIndex, annotationOverlays, it));
-                    result = Stream.concat(result, fromOverlay);
+        public MethodQuery process(Consumer<MethodInfo> annotationConfig) {
+            if (requiredDeclarationSites != null) {
+                for (ClassQuery requiredDeclarationSite : requiredDeclarationSites) {
+                    ((AppArchiveConfig.ClassConfigQuery) requiredDeclarationSite).configure(classConfig -> {
+                        applyFilters(classConfig.methods().stream())
+                                .forEach(annotationConfig);
+                    });
                 }
-                return result == null ? Stream.empty() : result.distinct();
             } else {
-                return jandexIndex.getKnownClasses()
+                Stream<MethodInfo> methodInfos = jandexIndex.getKnownClasses()
                         .stream()
                         .flatMap(it -> it.methods().stream())
-                        .filter(it -> nameFilter.test(it.name()))
-                        .map(it -> new MethodInfoImpl(jandexIndex, annotationOverlays, it));
+                        .map(it -> new MethodInfoImpl(
+                                jandexIndex,
+                                annotationOverlays,
+                                it)
+                        );
+
+                applyFilters(methodInfos)
+                        .forEach(annotationConfig);
+
             }
+
+            return this;
         }
     }
 
     class FieldQueryImpl implements FieldQuery {
-        private Stream<ClassInfo> requiredDeclarationSites; // elements not guaranteed to be distinct!
-        private Set<org.jboss.jandex.Type> requiredJandexTypes;
-        private Set<DotName> requiredJandexAnnotations;
+        List<ClassQuery> requiredDeclarationSites; // elements not guaranteed to be distinct!
+        Set<org.jboss.jandex.Type> requiredJandexTypes;
+        Set<DotName> requiredJandexAnnotations;
 
         @Override
         public FieldQuery declaredOn(ClassQuery classes) {
             if (requiredDeclarationSites == null) {
-                requiredDeclarationSites = classes.stream();
-            } else {
-                requiredDeclarationSites = Stream.concat(requiredDeclarationSites, classes.stream());
+                requiredDeclarationSites = new ArrayList<>();
             }
+            requiredDeclarationSites.add(classes);
 
             return this;
         }
@@ -463,100 +481,61 @@ class AppArchiveImpl implements AppArchive {
         }
 
         @Override
-        public Collection<FieldInfo> find() {
-            return stream().collect(Collectors.toList());
+        public FieldQuery annotatedWith(Type annotationType) {
+            if (requiredJandexAnnotations == null) {
+                requiredJandexAnnotations = new HashSet<>();
+            }
+
+            requiredJandexAnnotations.add(((TypeImpl) annotationType).jandexType.name());
+
+            return this;
         }
 
         @Override
-        public Stream<FieldInfo> stream() {
-            if (requiredDeclarationSites != null && requiredJandexTypes != null && requiredJandexAnnotations != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.fields().stream())
-                        .filter(it -> requiredJandexTypes.contains(((FieldInfoImpl) it).jandexDeclaration.type()))
-                        .filter(it -> {
-                            for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                                if (fieldsOverlay.hasAnnotation(((FieldInfoImpl) it).jandexDeclaration,
-                                        requiredJandexAnnotation)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredDeclarationSites != null && requiredJandexTypes != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.fields().stream())
-                        .filter(it -> requiredJandexTypes.contains(((FieldInfoImpl) it).jandexDeclaration.type()))
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredDeclarationSites != null && requiredJandexAnnotations != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.fields().stream())
-                        .filter(it -> {
-                            for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                                if (fieldsOverlay.hasAnnotation(((FieldInfoImpl) it).jandexDeclaration,
-                                        requiredJandexAnnotation)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredDeclarationSites != null) {
-                return requiredDeclarationSites
-                        .flatMap(it -> it.fields().stream())
-                        .distinct()
-                        .map(Function.identity());
-            } else if (requiredJandexTypes != null && requiredJandexAnnotations != null) {
-                return jandexIndex.getKnownClasses()
-                        .stream()
-                        .flatMap(it -> it.fields().stream())
-                        .filter(it -> requiredJandexTypes.contains(it.type()))
-                        .filter(it -> {
-                            for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                                if (fieldsOverlay.hasAnnotation(it, requiredJandexAnnotation)) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .map(it -> new FieldInfoImpl(jandexIndex, annotationOverlays, it));
-            } else if (requiredJandexTypes != null) {
-                return jandexIndex.getKnownClasses()
-                        .stream()
-                        .flatMap(it -> it.fields().stream())
-                        .filter(it -> requiredJandexTypes.contains(it.type()))
-                        .map(it -> new FieldInfoImpl(jandexIndex, annotationOverlays, it));
-            } else if (requiredJandexAnnotations != null) {
-                Stream<FieldInfo> result = null;
-                for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
-                    Stream<FieldInfo> partialResult = jandexIndex.getAnnotations(requiredJandexAnnotation)
-                            .stream()
-                            .filter(it -> it.target().kind() == org.jboss.jandex.AnnotationTarget.Kind.FIELD)
-                            .map(it -> it.target().asField())
-                            .filter(it -> fieldsOverlay.hasAnnotation(it, requiredJandexAnnotation))
-                            .map(it -> new FieldInfoImpl(jandexIndex, annotationOverlays, it));
-                    if (result == null) {
-                        result = partialResult;
-                    } else {
-                        result = Stream.concat(result, partialResult);
-                    }
-
-                    Stream<FieldInfoImpl> fromOverlay = fieldsOverlay
-                            .overlaidDeclarationsWithAnnotation(requiredJandexAnnotation)
-                            .stream()
-                            .map(it -> new FieldInfoImpl(jandexIndex, annotationOverlays, it));
-                    result = Stream.concat(result, fromOverlay);
+        public FieldQuery process(Consumer<FieldInfo> annotationConfig) {
+            if (requiredDeclarationSites != null) {
+                for (ClassQuery requiredDeclarationSite : requiredDeclarationSites) {
+                    ((AppArchiveConfig.ClassConfigQuery) requiredDeclarationSite).configure(classConfig -> {
+                        applyFilters(classConfig.fields().stream())
+                                .forEach(annotationConfig);
+                    });
                 }
-                return result == null ? Stream.empty() : result.distinct();
             } else {
-                return jandexIndex.getKnownClasses()
+                Stream<FieldInfo> fieldInfo = jandexIndex.getKnownClasses()
                         .stream()
                         .flatMap(it -> it.fields().stream())
-                        .map(it -> new FieldInfoImpl(jandexIndex, annotationOverlays, it));
+                        .map(it -> new FieldInfoImpl(
+                                jandexIndex,
+                                annotationOverlays,
+                                it)
+                        );
+
+                applyFilters(fieldInfo)
+                        .forEach(annotationConfig);
+
             }
+
+            return this;
+        }
+
+        protected Stream<FieldInfo> applyFilters(Stream<FieldInfo> fields) {
+            if (requiredJandexTypes != null) {
+
+                fields = fields
+                        .filter(it -> requiredJandexTypes.contains(((FieldInfoImpl) it).jandexDeclaration.type()));
+            }
+            if (requiredJandexAnnotations != null) {
+                fields = fields.filter(it -> {
+                    for (DotName requiredJandexAnnotation : requiredJandexAnnotations) {
+                        if (fieldsOverlay.hasAnnotation(((FieldInfoImpl) it).jandexDeclaration,
+                                requiredJandexAnnotation)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            }
+            return fields;
         }
     }
 }

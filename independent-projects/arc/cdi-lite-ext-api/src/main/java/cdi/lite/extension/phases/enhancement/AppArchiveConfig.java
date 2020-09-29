@@ -19,7 +19,7 @@ public interface AppArchiveConfig extends AppArchive {
     @Override
     FieldConfigQuery fields();
 
-    interface ClassConfigQuery extends ClassQuery {
+    interface ClassConfigQuery extends ClassQuery, AnnotationConfigurable<ClassQuery, ClassConfig>{
         @Override
         ClassConfigQuery exactly(String clazz);
 
@@ -43,11 +43,9 @@ public interface AppArchiveConfig extends AppArchive {
 
         @Override
         ClassConfigQuery annotatedWith(ClassInfo annotationType);
-
-        Collection<ClassConfig> configure();
     }
 
-    interface MethodConfigQuery extends MethodQuery {
+    interface MethodConfigQuery extends MethodQuery, AnnotationConfigurable<MethodQuery, MethodConfig> {
         @Override
         MethodConfigQuery declaredOn(ClassQuery classes);
 
@@ -62,11 +60,9 @@ public interface AppArchiveConfig extends AppArchive {
 
         @Override
         MethodConfigQuery annotatedWith(ClassInfo annotationType);
-
-        Collection<MethodConfig> configure();
     }
 
-    interface FieldConfigQuery extends FieldQuery {
+    interface FieldConfigQuery extends FieldQuery, AnnotationConfigurable<FieldQuery, FieldConfig> {
         @Override
         FieldConfigQuery declaredOn(ClassQuery classes);
 
@@ -81,7 +77,5 @@ public interface AppArchiveConfig extends AppArchive {
 
         @Override
         FieldConfigQuery annotatedWith(ClassInfo annotationType);
-
-        Collection<FieldConfig> configure();
     }
 }

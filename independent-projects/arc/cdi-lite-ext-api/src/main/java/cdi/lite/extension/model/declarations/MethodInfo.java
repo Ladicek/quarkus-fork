@@ -5,9 +5,14 @@ import cdi.lite.extension.model.types.TypeVariable;
 import java.util.List;
 import java.util.Optional;
 
-public interface MethodInfo extends DeclarationInfo {
-    String name();
-
+// Graeme comments start
+// -------------
+// Roughly equivalent to Micronaut's MethodElement:
+// https://docs.micronaut.io/latest/api/io/micronaut/inject/ast/MethodElement.html
+//
+// -------------
+// Graeme comments end
+public interface MethodInfo extends DeclarationInfo, NamedInfo {
     List<ParameterInfo> parameters();
 
     Type returnType();

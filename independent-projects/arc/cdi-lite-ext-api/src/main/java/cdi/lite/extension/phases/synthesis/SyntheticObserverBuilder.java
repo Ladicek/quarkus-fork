@@ -7,6 +7,15 @@ import cdi.lite.extension.model.types.Type;
 import java.lang.annotation.Annotation;
 import javax.enterprise.event.TransactionPhase;
 
+// Graeme comments start
+// -------------
+// The behaviour of this needs more clarity:
+// * What does the observer type being added look like?
+// * What does typeWithTransitiveClosure do?
+// * Need javadoc / explanation / example
+// * Many TODOs here
+// -------------
+// Graeme comments end
 /**
  * Instances are not reusable. For each synthetic observer, new instance must be created by
  * {@link SyntheticComponents#addObserver()}.

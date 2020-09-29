@@ -6,16 +6,17 @@ import cdi.lite.extension.model.declarations.ClassInfo;
 import java.lang.annotation.Annotation;
 import java.util.function.Predicate;
 
+
 public interface AnnotationConfig {
-    void addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes);
+    AnnotationConfig addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes);
 
-    void addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes);
+    AnnotationConfig addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes);
 
-    void addAnnotation(AnnotationInfo annotation);
+    AnnotationConfig addAnnotation(AnnotationInfo annotation);
 
-    void addAnnotation(Annotation annotation);
+    AnnotationConfig addAnnotation(Annotation annotation);
 
-    void removeAnnotation(Predicate<AnnotationInfo> predicate);
+    AnnotationConfig removeAnnotation(Predicate<AnnotationInfo> predicate);
 
-    void removeAllAnnotations();
+    AnnotationConfig removeAllAnnotations();
 }

@@ -5,6 +5,7 @@ import cdi.lite.extension.model.AnnotationInfo;
 import cdi.lite.extension.model.declarations.ClassInfo;
 import java.lang.annotation.Annotation;
 
+
 /**
  * Instances are not reusable. For each synthetic bean, new instance must be created by {@link SyntheticComponents#addBean()}.
  */
