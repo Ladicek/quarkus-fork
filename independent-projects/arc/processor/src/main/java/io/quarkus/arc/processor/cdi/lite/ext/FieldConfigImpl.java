@@ -17,32 +17,38 @@ class FieldConfigImpl extends FieldInfoImpl implements FieldConfig {
     }
 
     @Override
-    public void addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
+    public FieldConfig addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
         transformations.addAnnotation(jandexDeclaration, annotationType, attributes);
+        return this;
     }
 
     @Override
-    public void addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes) {
+    public FieldConfig addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes) {
         transformations.addAnnotation(jandexDeclaration, annotationType, attributes);
+        return this;
     }
 
     @Override
-    public void addAnnotation(AnnotationInfo annotation) {
+    public FieldConfig addAnnotation(AnnotationInfo annotation) {
         transformations.addAnnotation(jandexDeclaration, annotation);
+        return this;
     }
 
     @Override
-    public void addAnnotation(Annotation annotation) {
+    public FieldConfig addAnnotation(Annotation annotation) {
         transformations.addAnnotation(jandexDeclaration, annotation);
+        return this;
     }
 
     @Override
-    public void removeAnnotation(Predicate<AnnotationInfo> predicate) {
+    public FieldConfig removeAnnotation(Predicate<AnnotationInfo> predicate) {
         transformations.removeAnnotation(jandexDeclaration, predicate);
+        return this;
     }
 
     @Override
-    public void removeAllAnnotations() {
+    public FieldConfig removeAllAnnotations() {
         transformations.removeAllAnnotations(jandexDeclaration);
+        return this;
     }
 }

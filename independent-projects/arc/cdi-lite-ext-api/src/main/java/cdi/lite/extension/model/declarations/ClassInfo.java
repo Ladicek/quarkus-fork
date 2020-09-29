@@ -5,9 +5,14 @@ import cdi.lite.extension.model.types.TypeVariable;
 import java.util.Collection;
 import java.util.List;
 
-public interface ClassInfo extends DeclarationInfo {
-    String name();
-
+// Graeme comments start
+// -------------
+// Roughly equivalent to Micronaut's ClassElement:
+// https://docs.micronaut.io/latest/api/io/micronaut/inject/ast/ClassElement.html
+//
+// -------------
+// Graeme comments end
+public interface ClassInfo extends DeclarationInfo, NamedInfo {
     String simpleName();
 
     PackageInfo packageInfo();

@@ -4,10 +4,12 @@ import cdi.lite.extension.model.AnnotationAttribute;
 import cdi.lite.extension.model.AnnotationAttributeValue;
 import cdi.lite.extension.model.AnnotationInfo;
 import cdi.lite.extension.model.declarations.ClassInfo;
+import cdi.lite.extension.model.types.Type;
+
 import java.lang.annotation.Annotation;
 import java.util.List;
 
-public interface Annotations {
+public interface AnnotationAttributes {
     AnnotationAttributeValue value(boolean value);
 
     AnnotationAttributeValue value(byte value);
@@ -32,7 +34,9 @@ public interface Annotations {
 
     AnnotationAttributeValue value(ClassInfo enumType, String enumValue);
 
-    AnnotationAttributeValue value(Class<?> value); // TODO for stringly-typed API, rename and change type of `value` to `String`
+    AnnotationAttributeValue value(Class<?> value);
+
+    AnnotationAttributeValue value(Type value);
 
     AnnotationAttributeValue annotationValue(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes);
 
@@ -66,7 +70,15 @@ public interface Annotations {
 
     AnnotationAttribute attribute(String name, ClassInfo enumType, String enumValue);
 
-    AnnotationAttribute attribute(String name, Class<?> value); // TODO for stringly-typed API, rename and change type of `value` to `String`
+    AnnotationAttribute attribute(String name, Class<?> value);
+
+// Graeme comments start
+// -------------
+// In Micronaut we have a specific type to represent a class value
+// because when writing out metadata we can differentiate and statically load classes
+// -------------
+// Graeme comments end
+    AnnotationAttribute attribute(String name, Type value);
 
     AnnotationAttribute arrayAttribute(String name, AnnotationAttributeValue... values);
 

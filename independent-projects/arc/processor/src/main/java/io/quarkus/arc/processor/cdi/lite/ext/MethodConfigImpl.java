@@ -17,32 +17,38 @@ class MethodConfigImpl extends MethodInfoImpl implements MethodConfig {
     }
 
     @Override
-    public void addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
+    public MethodConfig addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
         transformations.addAnnotation(jandexDeclaration, annotationType, attributes);
+        return this;
     }
 
     @Override
-    public void addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes) {
+    public MethodConfig addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes) {
         transformations.addAnnotation(jandexDeclaration, annotationType, attributes);
+        return this;
     }
 
     @Override
-    public void addAnnotation(AnnotationInfo annotation) {
+    public MethodConfig addAnnotation(AnnotationInfo annotation) {
         transformations.addAnnotation(jandexDeclaration, annotation);
+        return this;
     }
 
     @Override
-    public void addAnnotation(Annotation annotation) {
+    public MethodConfig addAnnotation(Annotation annotation) {
         transformations.addAnnotation(jandexDeclaration, annotation);
+        return this;
     }
 
     @Override
-    public void removeAnnotation(Predicate<AnnotationInfo> predicate) {
+    public MethodConfig removeAnnotation(Predicate<AnnotationInfo> predicate) {
         transformations.removeAnnotation(jandexDeclaration, predicate);
+        return this;
     }
 
     @Override
-    public void removeAllAnnotations() {
+    public MethodConfig removeAllAnnotations() {
         transformations.removeAllAnnotations(jandexDeclaration);
+        return this;
     }
 }

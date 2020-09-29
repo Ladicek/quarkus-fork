@@ -1,10 +1,19 @@
 package cdi.lite.extension.model;
 
 import cdi.lite.extension.model.declarations.ClassInfo;
+import cdi.lite.extension.model.declarations.NamedInfo;
+
 import java.lang.annotation.Repeatable;
 import java.util.Collection;
 
-public interface AnnotationInfo {
+// Graeme comments start
+// -------------
+// Roughly equivalent to Micronaut's AnnotationValue:
+// https://docs.micronaut.io/latest/api/io/micronaut/core/annotation/AnnotationValue.html
+//
+// -------------
+// Graeme comments end
+public interface AnnotationInfo extends NamedInfo {
     /**
      * Target of this annotation.
      * That is, the declaration, the type parameter or the type use on which this annotation is present.

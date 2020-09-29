@@ -3,6 +3,20 @@ package cdi.lite.extension.model.types;
 import cdi.lite.extension.model.AnnotationTarget;
 import cdi.lite.extension.model.declarations.DeclarationInfo;
 
+// Graeme comments start
+// -------------
+// Needs to be expanded to handle records.
+//
+// Also within Micronaut since we process source code what happens is when the AST is
+// visited we pass the elements that have already been resolved generics wise so there
+// is no need to check whether something is a wild card or a type variable or whatever.
+// I'm not sure the use case for needing this information nor the complexity it adds to this type.
+//
+// Having said this this is roughly equivalent to Argument in Micronaut:
+// https://docs.micronaut.io/latest/api/io/micronaut/core/type/Argument.html
+//
+// -------------
+// Graeme comments end
 public interface Type extends AnnotationTarget {
     @Override
     default boolean isDeclaration() {

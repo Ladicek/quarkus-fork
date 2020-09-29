@@ -17,32 +17,38 @@ class ClassConfigImpl extends ClassInfoImpl implements ClassConfig {
     }
 
     @Override
-    public void addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
+    public ClassConfig addAnnotation(Class<? extends Annotation> annotationType, AnnotationAttribute... attributes) {
         transformations.addAnnotation(jandexDeclaration, annotationType, attributes);
+        return this;
     }
 
     @Override
-    public void addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes) {
+    public ClassConfig addAnnotation(ClassInfo annotationType, AnnotationAttribute... attributes) {
         transformations.addAnnotation(jandexDeclaration, annotationType, attributes);
+        return this;
     }
 
     @Override
-    public void addAnnotation(AnnotationInfo annotation) {
+    public ClassConfig addAnnotation(AnnotationInfo annotation) {
         transformations.addAnnotation(jandexDeclaration, annotation);
+        return this;
     }
 
     @Override
-    public void addAnnotation(Annotation annotation) {
+    public ClassConfig addAnnotation(Annotation annotation) {
         transformations.addAnnotation(jandexDeclaration, annotation);
+        return this;
     }
 
     @Override
-    public void removeAnnotation(Predicate<AnnotationInfo> predicate) {
+    public ClassConfig removeAnnotation(Predicate<AnnotationInfo> predicate) {
         transformations.removeAnnotation(jandexDeclaration, predicate);
+        return this;
     }
 
     @Override
-    public void removeAllAnnotations() {
+    public ClassConfig removeAllAnnotations() {
         transformations.removeAllAnnotations(jandexDeclaration);
+        return this;
     }
 }

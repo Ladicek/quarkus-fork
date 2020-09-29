@@ -4,15 +4,16 @@ import cdi.lite.extension.model.AnnotationAttribute;
 import cdi.lite.extension.model.AnnotationAttributeValue;
 import cdi.lite.extension.model.AnnotationInfo;
 import cdi.lite.extension.model.declarations.ClassInfo;
-import cdi.lite.extension.phases.enhancement.Annotations;
+import cdi.lite.extension.phases.enhancement.AnnotationAttributes;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.jboss.jandex.DotName;
 
-class AnnotationsImpl implements Annotations {
+class AnnotationsImpl implements AnnotationAttributes {
     private final org.jboss.jandex.IndexView jandexIndex;
     private final AllAnnotationOverlays annotationOverlays;
 
@@ -84,6 +85,11 @@ class AnnotationsImpl implements Annotations {
     @Override
     public AnnotationAttributeValue value(Class<?> value) {
         return attribute(null, value).value();
+    }
+
+    @Override
+    public AnnotationAttributeValue value(TypeRef value) {
+        return attribute("value", value).value();
     }
 
     @Override
@@ -185,6 +191,13 @@ class AnnotationsImpl implements Annotations {
     public AnnotationAttribute attribute(String name, Class<?> value) {
         return new AnnotationAttributeImpl(jandexIndex, annotationOverlays,
                 org.jboss.jandex.AnnotationValue.createClassValue(name, TypesReflection.jandexType(value)));
+    }
+
+    @Override
+    public AnnotationAttribute attribute(String name, TypeRef value) {
+        return new AnnotationAttributeImpl(jandexIndex, annotationOverlays,
+                org.jboss.jandex.AnnotationValue.createClassValue(name, TypesReflection.jandexType(value.getTypeName())));
+
     }
 
     @Override

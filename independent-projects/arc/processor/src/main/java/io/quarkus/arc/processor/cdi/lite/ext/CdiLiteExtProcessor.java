@@ -1,5 +1,6 @@
 package io.quarkus.arc.processor.cdi.lite.ext;
 
+import cdi.lite.extension.phases.enhancement.AnnotationAttributes;
 import io.quarkus.arc.processor.BeanProcessor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -18,7 +19,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jboss.jandex.ClassInfo;
 import org.jboss.jandex.DotName;
 
 public class CdiLiteExtProcessor {
@@ -470,8 +470,8 @@ public class CdiLiteExtProcessor {
             // beware of ordering! subtypes must precede supertypes
             if (java.util.Collection.class.isAssignableFrom(argumentClass)) {
                 parameterTypes[i] = java.util.Collection.class;
-            } else if (cdi.lite.extension.phases.enhancement.Annotations.class.isAssignableFrom(argumentClass)) {
-                parameterTypes[i] = cdi.lite.extension.phases.enhancement.Annotations.class;
+            } else if (AnnotationAttributes.class.isAssignableFrom(argumentClass)) {
+                parameterTypes[i] = AnnotationAttributes.class;
             } else if (cdi.lite.extension.phases.enhancement.AppArchiveConfig.class.isAssignableFrom(argumentClass)) {
                 parameterTypes[i] = cdi.lite.extension.phases.enhancement.AppArchiveConfig.class;
             } else if (cdi.lite.extension.AppArchive.class.isAssignableFrom(argumentClass)) {

@@ -4,6 +4,8 @@ import cdi.lite.extension.beans.BeanInfo;
 import cdi.lite.extension.beans.ObserverInfo;
 import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.types.Type;
+import cdi.lite.extension.phases.enhancement.AnnotationConfigurable;
+
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.stream.Stream;

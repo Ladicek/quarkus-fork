@@ -5,6 +5,18 @@ import cdi.lite.extension.model.types.Type;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 
+// Graeme comments start
+// -------------
+// This API seems a much more limited version of Micronaut's AnnotationMetadata and AnnotationSource APIs:
+//
+// https://docs.micronaut.io/latest/api/io/micronaut/core/annotation/AnnotationMetadata.html
+// https://docs.micronaut.io/latest/api/io/micronaut/core/annotation/AnnotationSource.html
+//
+// Seems like in a more realistic scenario we would need to make this more complete as it
+// appears quite complex do things like retrieve a String[] of values, get nested annotations, get an array of enums, get all the values of a repeated annotations etc.
+//
+// -------------
+// Graeme comments end
 /**
  * Annotation target is anything that can be annotated.
  * That is:

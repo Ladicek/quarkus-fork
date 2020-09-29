@@ -4,11 +4,29 @@ import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.FieldInfo;
 import cdi.lite.extension.model.declarations.MethodInfo;
 import cdi.lite.extension.model.types.Type;
+import cdi.lite.extension.phases.enhancement.*;
+
 import java.lang.annotation.Annotation;
-import java.util.Collection;
-import java.util.stream.Stream;
 
 public interface AppArchive {
+    // Graeme comments start
+    // -------------
+    // Enable access to the factory for creating types from strings.
+    // -------------
+    // Graeme comments end
+    Types types();
+
+    // Graeme comments start
+    // -------------
+    // Note that in the case of annotation processors the model is event driven
+    // rather than pull driven hence I altered this interface to add DeclarationInfoProcessor where you register hooks that can be triggered.
+    //
+    // This is different from the pull model where you ask for all the classes.
+    // In addition in the case of processing source code you don't have access
+    // to the whole world, only the classes being processed by this annotation round
+    // so the queries would only return results from those.
+    // -------------
+    // Graeme comments end
     ClassQuery classes();
 
     MethodQuery constructors(); // no static initializers
@@ -40,26 +58,32 @@ public interface AppArchive {
      * }</pre>
      * returns all classes annotated either with {@code @Foo} or with {@code @Bar} (or both).
      */
-    interface ClassQuery {
+    interface ClassQuery extends DeclarationInfoProcessor<ClassQuery, ClassInfo> {
         ClassQuery exactly(String clazz);
 
         ClassQuery exactly(ClassInfo clazz);
+
+        ClassQuery exactly(Type type);
 
         ClassQuery subtypeOf(String clazz);
 
         ClassQuery subtypeOf(ClassInfo clazz);
 
+        ClassQuery subtypeOf(Type type);
+
         ClassQuery supertypeOf(String clazz);
 
         ClassQuery supertypeOf(ClassInfo clazz);
 
+        ClassQuery supertypeOf(Type type);
+
         ClassQuery annotatedWith(Class<? extends Annotation> annotationType);
+
+        ClassQuery annotatedWith(String annotationName);
 
         ClassQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<ClassInfo> find();
-
-        Stream<ClassInfo> stream();
+        ClassQuery annotatedWith(Type annotationType);
     }
 
     /**
@@ -103,7 +127,7 @@ public interface AppArchive {
      * }</pre>
      * returns all methods annotated either with {@code @Foo} or with {@code @Bar} (or both).
      */
-    interface MethodQuery {
+    interface MethodQuery extends DeclarationInfoProcessor<MethodQuery, MethodInfo> {
         MethodQuery declaredOn(ClassQuery classes);
 
         /**
@@ -119,9 +143,7 @@ public interface AppArchive {
 
         MethodQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<MethodInfo> find();
-
-        Stream<MethodInfo> stream();
+        MethodQuery annotatedWith(Type annotationType);
     }
 
     /**
@@ -165,7 +187,7 @@ public interface AppArchive {
      * }</pre>
      * returns all fields annotated either with {@code @Foo} or with {@code @Bar} (or both).
      */
-    interface FieldQuery {
+    interface FieldQuery extends DeclarationInfoProcessor<FieldQuery, FieldInfo> {
         FieldQuery declaredOn(ClassQuery classes);
 
         /**
@@ -179,8 +201,6 @@ public interface AppArchive {
 
         FieldQuery annotatedWith(ClassInfo annotationType);
 
-        Collection<FieldInfo> find();
-
-        Stream<FieldInfo> stream();
+        FieldQuery annotatedWith(Type annotationType);
     }
 }

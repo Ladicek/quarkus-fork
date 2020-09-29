@@ -4,10 +4,11 @@ import cdi.lite.extension.model.AnnotationInfo;
 import cdi.lite.extension.model.declarations.ClassInfo;
 import cdi.lite.extension.model.declarations.FieldInfo;
 import cdi.lite.extension.model.declarations.MethodInfo;
+import cdi.lite.extension.model.declarations.NamedInfo;
 import cdi.lite.extension.model.types.Type;
 import java.util.Collection;
 
-public interface BeanInfo {
+public interface BeanInfo extends AnnotationInfo, NamedInfo {
     ScopeInfo scope();
 
     Collection<Type> types();
@@ -49,4 +50,9 @@ public interface BeanInfo {
     // TODO interceptors?
 
     Collection<InjectionPointInfo> injectionPoints();
+
+    @Override
+    default String name() {
+        return getName();
+    }
 }
