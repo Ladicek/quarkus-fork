@@ -3,7 +3,6 @@ package io.quarkus.smallrye.faulttolerance.deployment;
 import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.OptionalInt;
 import java.util.Set;
 
 import javax.inject.Singleton;
