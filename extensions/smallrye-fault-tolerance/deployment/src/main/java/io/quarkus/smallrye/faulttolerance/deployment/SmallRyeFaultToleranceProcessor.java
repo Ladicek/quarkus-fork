@@ -27,7 +27,6 @@ import io.quarkus.arc.deployment.ValidationPhaseBuildItem;
 import io.quarkus.arc.processor.AnnotationStore;
 import io.quarkus.arc.processor.BeanInfo;
 import io.quarkus.arc.processor.BuildExtension;
-import io.quarkus.arc.processor.BuiltinScope;
 import io.quarkus.arc.processor.DotNames;
 import io.quarkus.deployment.Feature;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -43,16 +42,9 @@ import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ServiceProviderBuildItem;
 import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
 import io.quarkus.smallrye.faulttolerance.runtime.NoopMetricRegistry;
-import io.quarkus.smallrye.faulttolerance.runtime.QuarkusFallbackHandlerProvider;
-import io.quarkus.smallrye.faulttolerance.runtime.QuarkusFaultToleranceOperationProvider;
-import io.quarkus.smallrye.faulttolerance.runtime.SmallRyeFaultToleranceCdiLiteExtension;
 import io.quarkus.smallrye.faulttolerance.runtime.SmallRyeFaultToleranceRecorder;
 import io.smallrye.faulttolerance.ExecutorFactory;
-import io.smallrye.faulttolerance.ExecutorProvider;
-import io.smallrye.faulttolerance.FaultToleranceInterceptor;
 import io.smallrye.faulttolerance.internal.RequestContextControllerProvider;
-import io.smallrye.faulttolerance.internal.StrategyCache;
-import io.smallrye.faulttolerance.metrics.MetricsCollectorFactory;
 import io.smallrye.faulttolerance.propagation.ContextPropagationExecutorFactory;
 import io.smallrye.faulttolerance.propagation.ContextPropagationRequestContextControllerProvider;
 
@@ -98,13 +90,9 @@ public class SmallRyeFaultToleranceProcessor {
             fallbackHandlers.add(implementor.name().toString());
         }
         if (!fallbackHandlers.isEmpty()) {
-            AdditionalBeanBuildItem.Builder fallbackHandlersBeans = AdditionalBeanBuildItem.builder()
-                    .setDefaultScope(BuiltinScope.DEPENDENT.getName());
             for (String fallbackHandler : fallbackHandlers) {
                 reflectiveClass.produce(new ReflectiveClassBuildItem(true, false, fallbackHandler));
-                fallbackHandlersBeans.addBeanClass(fallbackHandler);
             }
-            additionalBean.produce(fallbackHandlersBeans.build());
         }
 
         for (DotName annotation : FT_ANNOTATIONS) {
@@ -112,24 +100,6 @@ public class SmallRyeFaultToleranceProcessor {
             // also make them bean defining annotations
             additionalBda.produce(new BeanDefiningAnnotationBuildItem(annotation));
         }
-
-        // Register bean classes
-        AdditionalBeanBuildItem.Builder builder = AdditionalBeanBuildItem.builder();
-        // Also register MP FT annotations so that they are recognized as interceptor bindings
-        // Note that MP FT API jar is nor indexed, nor contains beans.xml so it is not part of the app index
-        for (DotName ftAnnotation : FT_ANNOTATIONS) {
-            builder.addBeanClass(ftAnnotation.toString());
-        }
-        builder.addBeanClasses(FaultToleranceInterceptor.class,
-                ExecutorProvider.class,
-                StrategyCache.class,
-                QuarkusFaultToleranceOperationProvider.class,
-                QuarkusFallbackHandlerProvider.class,
-                MetricsCollectorFactory.class,
-                // TODO this is hopefully only necessary because the class is in Quarkus;
-                //  if it was in SmallRye Fault Tolerance, it should work out of the box
-                SmallRyeFaultToleranceCdiLiteExtension.class);
-        additionalBean.produce(builder.build());
 
         if (!metricsCapability.isPresent()) {
             //disable fault tolerance metrics with the MP sys props and provides a No-op metric registry.

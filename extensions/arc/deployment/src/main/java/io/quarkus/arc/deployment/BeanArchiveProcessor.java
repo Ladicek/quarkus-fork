@@ -22,6 +22,7 @@ import io.quarkus.arc.processor.BeanArchives;
 import io.quarkus.arc.processor.BeanDefiningAnnotation;
 import io.quarkus.arc.processor.BeanDeployment;
 import io.quarkus.arc.processor.DotNames;
+import io.quarkus.arc.processor.cdi.lite.ext.CdiLiteExtDiscoveryProcessor;
 import io.quarkus.arc.runtime.LifecycleEventRunner;
 import io.quarkus.bootstrap.model.AppArtifactKey;
 import io.quarkus.deployment.ApplicationArchive;
@@ -64,6 +65,10 @@ public class BeanArchiveProcessor {
         }
         // NOTE: the types added directly must always declare a scope annotation otherwise they will be ignored during bean discovery
         additionalBeans.add(LifecycleEventRunner.class.getName());
+
+        Set<String> additionalBeansFromCdiLiteExtensions = new HashSet<>();
+        new CdiLiteExtDiscoveryProcessor(applicationIndex, additionalBeansFromCdiLiteExtensions).run();
+        additionalBeans.addAll(additionalBeansFromCdiLiteExtensions);
 
         // Build the index for additional beans and generated bean classes
         Set<DotName> additionalIndex = new HashSet<>();
