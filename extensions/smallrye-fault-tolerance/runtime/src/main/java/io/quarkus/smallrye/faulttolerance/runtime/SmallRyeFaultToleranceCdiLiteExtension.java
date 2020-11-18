@@ -105,6 +105,16 @@ public class SmallRyeFaultToleranceCdiLiteExtension implements BuildCompatibleEx
                         it.addAnnotation(new FaultToleranceExtension.PriorityLiteral(priority.getAsInt()));
                     });
         }
+
+        app.classes()
+                .subtypeOf(FallbackHandler.class)
+                .configure(fallbackHandler -> {
+                    boolean hasScope = fallbackHandler.hasAnnotation(it -> it.declaration().hasAnnotation(Scope.class)
+                            || it.declaration().hasAnnotation(NormalScope.class));
+                    if (!hasScope) {
+                        fallbackHandler.addAnnotation(new Dependent.Literal());
+                    }
+                });
     }
 */
 }
