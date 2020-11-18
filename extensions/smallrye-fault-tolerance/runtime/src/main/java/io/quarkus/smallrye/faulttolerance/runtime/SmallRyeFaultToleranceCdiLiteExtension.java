@@ -75,9 +75,8 @@ public class SmallRyeFaultToleranceCdiLiteExtension implements BuildCompatibleEx
     @Enhancement
     @SubtypesOf(type = FallbackHandler.class) // added to bean archive in @Discovery, now make them beans
     public void fallbackHandlers(ClassConfig clazz) {
-        boolean hasScope = clazz.annotations()
-                .stream()
-                .anyMatch(ann -> ann.declaration().hasAnnotation(Scope.class) || ann.declaration().hasAnnotation(NormalScope.class));
+        boolean hasScope = clazz.hasAnnotation(it -> it.declaration().hasAnnotation(Scope.class)
+                || it.declaration().hasAnnotation(NormalScope.class));
         if (!hasScope) {
             clazz.addAnnotation(Dependent.class);
         }
