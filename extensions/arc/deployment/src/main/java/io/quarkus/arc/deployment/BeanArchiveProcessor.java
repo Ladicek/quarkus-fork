@@ -16,7 +16,6 @@ import io.quarkus.arc.processor.BeanArchives;
 import io.quarkus.arc.processor.BeanDefiningAnnotation;
 import io.quarkus.arc.processor.BeanDeployment;
 import io.quarkus.arc.processor.DotNames;
-import io.quarkus.arc.processor.cdi.lite.ext.CdiLiteExtDiscoveryProcessor;
 import io.quarkus.bootstrap.model.AppArtifactKey;
 import io.quarkus.deployment.ApplicationArchive;
 import io.quarkus.deployment.annotations.BuildProducer;
@@ -36,7 +35,8 @@ public class BeanArchiveProcessor {
             List<BeanDefiningAnnotationBuildItem> additionalBeanDefiningAnnotations,
             List<AdditionalBeanBuildItem> additionalBeans, List<GeneratedBeanBuildItem> generatedBeans,
             LiveReloadBuildItem liveReloadBuildItem, BuildProducer<GeneratedClassBuildItem> generatedClass,
-            CustomScopeAnnotationsBuildItem customScopes, List<ExcludeDependencyBuildItem> excludeDependencyBuildItems)
+            CustomScopeAnnotationsBuildItem customScopes, List<ExcludeDependencyBuildItem> excludeDependencyBuildItems,
+            CdiLiteBuildItem cdiLite)
             throws Exception {
 
         // First build an index from application archives
@@ -51,7 +51,7 @@ public class BeanArchiveProcessor {
         }
 
         Set<String> additionalBeansFromCdiLiteExtensions = new HashSet<>();
-        new CdiLiteExtDiscoveryProcessor(applicationIndex, additionalBeansFromCdiLiteExtensions).run();
+        cdiLite.extensions.runDiscovery(applicationIndex, additionalBeansFromCdiLiteExtensions);
         additionalBeanClasses.addAll(additionalBeansFromCdiLiteExtensions);
 
         // Build the index for additional beans and generated bean classes
