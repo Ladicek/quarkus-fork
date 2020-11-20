@@ -6,7 +6,7 @@ import io.quarkus.arc.processor.BuildExtension.BuildContext;
 import io.quarkus.arc.processor.BuildExtension.Key;
 import io.quarkus.arc.processor.ResourceOutput.Resource;
 import io.quarkus.arc.processor.ResourceOutput.Resource.SpecialType;
-import io.quarkus.arc.processor.cdi.lite.ext.CdiLiteExtEnhancementProcessor;
+import io.quarkus.arc.processor.cdi.lite.ext.CdiLiteExtensions;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,8 +74,13 @@ public class BeanProcessor {
     // Such as java.lang.Deprecated 
     protected final Predicate<DotName> injectionPointAnnotationsPredicate;
 
+    private final CdiLiteExtensions cdiLiteExtensions;
+
     private BeanProcessor(Builder builder) {
-        new CdiLiteExtEnhancementProcessor(builder.beanArchiveIndex, builder).run();
+        this.cdiLiteExtensions = builder.cdiLiteExtensions;
+        if (cdiLiteExtensions != null) {
+            cdiLiteExtensions.runEnhancement(builder.beanArchiveIndex, builder);
+        }
 
         this.reflectionRegistration = builder.reflectionRegistration;
         this.applicationClassPredicate = builder.applicationClassPredicate;
@@ -136,7 +141,15 @@ public class BeanProcessor {
      * @return the validation context
      */
     public BeanDeploymentValidator.ValidationContext validate(Consumer<BytecodeTransformer> bytecodeTransformerConsumer) {
-        return beanDeployment.validate(beanDeploymentValidators, bytecodeTransformerConsumer);
+        ValidationContext validationContext = beanDeployment.validate(beanDeploymentValidators, bytecodeTransformerConsumer);
+        if (cdiLiteExtensions != null) {
+            cdiLiteExtensions.runValidation(beanDeployment.getBeanArchiveIndex(), validationContext.get(Key.BEANS),
+                    validationContext.get(Key.OBSERVERS));
+            for (Throwable error : cdiLiteExtensions.getValidationErrors()) {
+                validationContext.addDeploymentProblem(error);
+            }
+        }
+        return validationContext;
     }
 
     public void processValidationErrors(BeanDeploymentValidator.ValidationContext validationContext) {
@@ -287,6 +300,8 @@ public class BeanProcessor {
 
         AlternativePriorities alternativePriorities;
         List<Predicate<ClassInfo>> excludeTypes = new ArrayList<>();
+
+        CdiLiteExtensions cdiLiteExtensions;
 
         private Predicate<DotName> applicationClassPredicate = new Predicate<DotName>() {
             @Override
@@ -489,6 +504,11 @@ public class BeanProcessor {
          */
         public Builder addExcludeType(Predicate<ClassInfo> predicate) {
             this.excludeTypes.add(predicate);
+            return this;
+        }
+
+        public Builder setCdiLiteExtensions(CdiLiteExtensions cdiLiteExtensions) {
+            this.cdiLiteExtensions = cdiLiteExtensions;
             return this;
         }
 
