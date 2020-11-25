@@ -8,9 +8,11 @@ import io.quarkus.gizmo.MethodDescriptor;
 import io.quarkus.gizmo.ResultHandle;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -32,6 +34,7 @@ public abstract class BeanConfiguratorBase<B extends BeanConfiguratorBase<B, T>,
     protected final Set<AnnotationInstance> qualifiers;
     protected ScopeInfo scope;
     protected Integer alternativePriority;
+    protected final List<StereotypeInfo> stereotypes;
     protected String name;
     protected Consumer<MethodCreator> creatorConsumer;
     protected Consumer<MethodCreator> destroyerConsumer;
@@ -45,6 +48,7 @@ public abstract class BeanConfiguratorBase<B extends BeanConfiguratorBase<B, T>,
         this.types = new HashSet<>();
         this.qualifiers = new HashSet<>();
         this.scope = BuiltinScope.DEPENDENT.getInfo();
+        this.stereotypes = new ArrayList<>();
         this.removable = true;
         this.params = new HashMap<>();
     }
@@ -66,6 +70,8 @@ public abstract class BeanConfiguratorBase<B extends BeanConfiguratorBase<B, T>,
         if (base.alternativePriority != null) {
             alternativePriority(base.alternativePriority);
         }
+        stereotypes.clear();
+        stereotypes.addAll(base.stereotypes);
         name(base.name);
         creator(base.creatorConsumer);
         destroyer(base.destroyerConsumer);
@@ -172,6 +178,16 @@ public abstract class BeanConfiguratorBase<B extends BeanConfiguratorBase<B, T>,
 
     public B alternativePriority(int priority) {
         this.alternativePriority = priority;
+        return self();
+    }
+
+    public B addStereotype(StereotypeInfo stereotype) {
+        this.stereotypes.add(stereotype);
+        return self();
+    }
+
+    public B stereotypes(StereotypeInfo... stereotypes) {
+        Collections.addAll(this.stereotypes, stereotypes);
         return self();
     }
 

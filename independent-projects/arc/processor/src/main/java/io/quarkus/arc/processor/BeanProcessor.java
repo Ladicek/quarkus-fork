@@ -79,6 +79,7 @@ public class BeanProcessor {
     private BeanProcessor(Builder builder) {
         this.cdiLiteExtensions = builder.cdiLiteExtensions;
         if (cdiLiteExtensions != null) {
+            cdiLiteExtensions.registerContexts(builder);
             cdiLiteExtensions.runEnhancement(builder.beanArchiveIndex, builder);
         }
 
@@ -145,9 +146,7 @@ public class BeanProcessor {
         if (cdiLiteExtensions != null) {
             cdiLiteExtensions.runValidation(beanDeployment.getBeanArchiveIndex(), validationContext.get(Key.BEANS),
                     validationContext.get(Key.OBSERVERS));
-            for (Throwable error : cdiLiteExtensions.getValidationErrors()) {
-                validationContext.addDeploymentProblem(error);
-            }
+            cdiLiteExtensions.registerValidationErrors(validationContext);
         }
         return validationContext;
     }

@@ -1,5 +1,6 @@
 package io.quarkus.arc.test;
 
+import cdi.lite.extension.BuildCompatibleExtension;
 import io.quarkus.arc.Arc;
 import io.quarkus.arc.ComponentsProvider;
 import io.quarkus.arc.ResourceReferenceProvider;
@@ -84,6 +85,7 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
         private boolean removeUnusedBeans = false;
         private final List<Predicate<BeanInfo>> exclusions;
         private AlternativePriorities alternativePriorities;
+        private final List<Class<? extends BuildCompatibleExtension>> buildCompatibleExtensions;
 
         public Builder() {
             resourceReferenceProviders = new ArrayList<>();
@@ -99,6 +101,7 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
             observerTransformers = new ArrayList<>();
             beanDeploymentValidators = new ArrayList<>();
             exclusions = new ArrayList<>();
+            buildCompatibleExtensions = new ArrayList<>();
         }
 
         public Builder resourceReferenceProviders(Class<?>... resourceReferenceProviders) {
@@ -182,6 +185,12 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
             return this;
         }
 
+        @SafeVarargs
+        public final Builder buildCompatibleExtensions(Class<? extends BuildCompatibleExtension>... extensionClasses) {
+            Collections.addAll(this.buildCompatibleExtensions, extensionClasses);
+            return this;
+        }
+
         public ArcTestContainer build() {
             return new ArcTestContainer(this);
         }
@@ -219,6 +228,8 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
 
     private final AlternativePriorities alternativePriorities;
 
+    private final List<Class<? extends BuildCompatibleExtension>> buildCompatibleExtensions;
+
     public ArcTestContainer(Class<?>... beanClasses) {
         this.resourceReferenceProviders = Collections.emptyList();
         this.beanClasses = Arrays.asList(beanClasses);
@@ -237,6 +248,7 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
         this.removeUnusedBeans = false;
         this.exclusions = Collections.emptyList();
         this.alternativePriorities = null;
+        this.buildCompatibleExtensions = Collections.emptyList();
     }
 
     public ArcTestContainer(Builder builder) {
@@ -257,6 +269,7 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
         this.removeUnusedBeans = builder.removeUnusedBeans;
         this.exclusions = builder.exclusions;
         this.alternativePriorities = builder.alternativePriorities;
+        this.buildCompatibleExtensions = builder.buildCompatibleExtensions;
     }
 
     // this is where we start Arc, we operate on a per-method basis
@@ -362,6 +375,9 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
             File resourceReferenceProviderFile = new File(generatedSourcesDirectory + "/" + nameToPath(testClass.getPackage()
                     .getName()), ResourceReferenceProvider.class.getSimpleName());
 
+            File buildCompatibleExtensionsFile = new File(generatedSourcesDirectory + "/" + nameToPath(testClass.getPackage()
+                    .getName()), BuildCompatibleExtension.class.getSimpleName());
+
             if (!resourceReferenceProviders.isEmpty()) {
                 try {
                     resourceReferenceProviderFile.getParentFile()
@@ -374,8 +390,32 @@ public class ArcTestContainer implements BeforeEachCallback, AfterEachCallback {
                 }
             }
 
+            if (!this.buildCompatibleExtensions.isEmpty()) {
+                try {
+                    buildCompatibleExtensionsFile.getParentFile().mkdirs();
+                    Files.write(buildCompatibleExtensionsFile.toPath(), this.buildCompatibleExtensions.stream()
+                            .map(Class::getName)
+                            .collect(Collectors.toList()));
+                } catch (IOException e) {
+                    throw new IllegalStateException("Error generating BuildCompatibleExtension list", e);
+                }
+            }
+
+            ClassLoader processingClassLoader = new ClassLoader(old) {
+                @Override
+                public Enumeration<URL> getResources(String name) throws IOException {
+                    if (("META-INF/services/" + BuildCompatibleExtension.class.getName()).equals(name)
+                            && !buildCompatibleExtensions.isEmpty()) {
+                        return Collections.enumeration(Collections.singleton(buildCompatibleExtensionsFile.toURI()
+                                .toURL()));
+                    }
+                    return super.getResources(name);
+                }
+            };
+            Thread.currentThread().setContextClassLoader(processingClassLoader);
+
             BeanProcessor.Builder builder = BeanProcessor.builder()
-                    .setName(testClass.getSimpleName())
+                    .setName(testClass.getName().replace('.', '_'))
                     .setBeanArchiveIndex(BeanArchives.buildBeanArchiveIndex(getClass().getClassLoader(),
                             new BeanArchives.PersistentClassIndex(), beanArchiveIndex))
                     .setApplicationIndex(applicationIndex)

@@ -56,6 +56,7 @@ public final class BeanConfigurator<T> extends BeanConfiguratorBase<BeanConfigur
                     .types(types)
                     .qualifiers(qualifiers)
                     .alternativePriority(alternativePriority)
+                    .stereotypes(stereotypes)
                     .name(name)
                     .creator(creatorConsumer)
                     .destroyer(destroyerConsumer)
