@@ -197,7 +197,17 @@ public abstract class BeanConfiguratorBase<B extends BeanConfiguratorBase<B, T>,
         return self();
     }
 
+    public B param(String name, Class<?>[] value) {
+        params.put(name, value);
+        return self();
+    }
+
     public B param(String name, int value) {
+        params.put(name, value);
+        return self();
+    }
+
+    public B param(String name, int[] value) {
         params.put(name, value);
         return self();
     }
@@ -207,7 +217,17 @@ public abstract class BeanConfiguratorBase<B extends BeanConfiguratorBase<B, T>,
         return self();
     }
 
+    public B param(String name, long[] value) {
+        params.put(name, value);
+        return self();
+    }
+
     public B param(String name, double value) {
+        params.put(name, value);
+        return self();
+    }
+
+    public B param(String name, double[] value) {
         params.put(name, value);
         return self();
     }
@@ -217,7 +237,17 @@ public abstract class BeanConfiguratorBase<B extends BeanConfiguratorBase<B, T>,
         return self();
     }
 
+    public B param(String name, String[] value) {
+        params.put(name, value);
+        return self();
+    }
+
     public B param(String name, boolean value) {
+        params.put(name, value);
+        return self();
+    }
+
+    public B param(String name, boolean[] value) {
         params.put(name, value);
         return self();
     }

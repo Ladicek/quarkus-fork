@@ -173,8 +173,13 @@ public class BeanDeployment {
         repeatingInterceptorBindingAnnotations = findContainerAnnotations(interceptorBindings, this.beanArchiveIndex);
         buildContextPut(Key.INTERCEPTOR_BINDINGS.asString(), Collections.unmodifiableMap(interceptorBindings));
 
+        Set<DotName> stereotypeRegistrars = new HashSet<>();
+        for (StereotypeRegistrar stereotypeRegistrar : builder.stereotypeRegistrars) {
+            stereotypeRegistrars.addAll(stereotypeRegistrar.registerAdditionalStereotypes());
+        }
+
         this.stereotypes = findStereotypes(this.beanArchiveIndex, interceptorBindings, beanDefiningAnnotations, customContexts,
-                builder.additionalStereotypes, annotationStore);
+                builder.additionalStereotypes, stereotypeRegistrars, annotationStore);
         buildContextPut(Key.STEREOTYPES.asString(), Collections.unmodifiableMap(stereotypes));
 
         this.transitiveInterceptorBindings = findTransitiveInterceptorBindigs(interceptorBindings.keySet(),
@@ -633,10 +638,14 @@ public class BeanDeployment {
     private Map<DotName, StereotypeInfo> findStereotypes(IndexView index, Map<DotName, ClassInfo> interceptorBindings,
             Collection<BeanDefiningAnnotation> additionalBeanDefiningAnnotations,
             Map<ScopeInfo, Function<MethodCreator, ResultHandle>> customContexts,
-            Map<DotName, Collection<AnnotationInstance>> additionalStereotypes, AnnotationStore annotationStore) {
+            Map<DotName, Collection<AnnotationInstance>> additionalStereotypes, Set<DotName> stereotypeRegistrars,
+            AnnotationStore annotationStore) {
 
         Map<DotName, StereotypeInfo> stereotypes = new HashMap<>();
         final List<AnnotationInstance> stereotypeAnnotations = new ArrayList<>(index.getAnnotations(DotNames.STEREOTYPE));
+        for (DotName stereotypeRegistrar : stereotypeRegistrars) {
+            stereotypeAnnotations.addAll(index.getAnnotations(stereotypeRegistrar));
+        }
         for (final Collection<AnnotationInstance> annotations : additionalStereotypes.values()) {
             stereotypeAnnotations.addAll(annotations);
         }
@@ -665,6 +674,9 @@ public class BeanDeployment {
                         }
                         isNamed = true;
                     } else if (DotNames.PRIORITY.equals(annotation.name())) {
+                        alternativePriority = annotation.value().asInt();
+                    } else if (DotNames.ALTERNATIVE_PRIORITY.equals(annotation.name())) {
+                        isAlternative = true;
                         alternativePriority = annotation.value().asInt();
                     } else {
                         final ScopeInfo scope = getScope(annotation.name(), customContexts);

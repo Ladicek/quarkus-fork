@@ -79,8 +79,9 @@ public class BeanProcessor {
     private BeanProcessor(Builder builder) {
         this.cdiLiteExtensions = builder.cdiLiteExtensions;
         if (cdiLiteExtensions != null) {
-            cdiLiteExtensions.registerContexts(builder);
-            cdiLiteExtensions.runEnhancement(builder.beanArchiveIndex, builder);
+            cdiLiteExtensions.initializeAnnotationTransformations(builder.beanArchiveIndex, builder);
+            cdiLiteExtensions.registerMetaAnnotations(builder.beanArchiveIndex, builder);
+            cdiLiteExtensions.runEnhancement(builder.beanArchiveIndex);
         }
 
         this.reflectionRegistration = builder.reflectionRegistration;
@@ -280,7 +281,7 @@ public class BeanProcessor {
         IndexView beanArchiveIndex;
         IndexView applicationIndex;
         Collection<BeanDefiningAnnotation> additionalBeanDefiningAnnotations;
-        Map<DotName, Collection<AnnotationInstance>> additionalStereotypes;
+        Map<DotName, Collection<AnnotationInstance>> additionalStereotypes; // TODO remove
         ResourceOutput output;
         boolean sharedAnnotationLiterals;
         ReflectionRegistration reflectionRegistration;
@@ -294,6 +295,7 @@ public class BeanProcessor {
         final List<ContextRegistrar> contextRegistrars;
         final List<QualifierRegistrar> qualifierRegistrars;
         final List<InterceptorBindingRegistrar> interceptorBindingRegistrars;
+        final List<StereotypeRegistrar> stereotypeRegistrars;
         final List<BeanDeploymentValidator> beanDeploymentValidators;
 
         boolean removeUnusedBeans = false;
@@ -314,7 +316,7 @@ public class BeanProcessor {
         public Builder() {
             name = DEFAULT_NAME;
             additionalBeanDefiningAnnotations = Collections.emptySet();
-            additionalStereotypes = Collections.emptyMap();
+            additionalStereotypes = Collections.emptyMap(); // TODO remove
             sharedAnnotationLiterals = true;
             reflectionRegistration = ReflectionRegistration.NOOP;
             resourceAnnotations = new ArrayList<>();
@@ -326,6 +328,7 @@ public class BeanProcessor {
             contextRegistrars = new ArrayList<>();
             qualifierRegistrars = new ArrayList<>();
             interceptorBindingRegistrars = new ArrayList<>();
+            stereotypeRegistrars = new ArrayList<>();
             beanDeploymentValidators = new ArrayList<>();
 
             removeUnusedBeans = false;
@@ -378,6 +381,7 @@ public class BeanProcessor {
             return this;
         }
 
+        // TODO remove
         public Builder setAdditionalStereotypes(Map<DotName, Collection<AnnotationInstance>> additionalStereotypes) {
             Objects.requireNonNull(additionalStereotypes);
             this.additionalStereotypes = additionalStereotypes;
@@ -391,6 +395,11 @@ public class BeanProcessor {
 
         public Builder addInterceptorBindingRegistrar(InterceptorBindingRegistrar bindingRegistrar) {
             this.interceptorBindingRegistrars.add(bindingRegistrar);
+            return this;
+        }
+
+        public Builder addStereotypeRegistrar(StereotypeRegistrar stereotypeRegistrar) {
+            this.stereotypeRegistrars.add(stereotypeRegistrar);
             return this;
         }
 
