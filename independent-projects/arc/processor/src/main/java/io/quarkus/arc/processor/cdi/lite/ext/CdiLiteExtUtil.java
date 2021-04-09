@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.jboss.jandex.DotName;
 import org.jboss.jandex.Index;
+import org.jboss.jandex.IndexView;
 import org.jboss.jandex.Indexer;
 import org.jboss.jandex.Type;
 
@@ -26,7 +27,9 @@ class CdiLiteExtUtil {
     private final Map<String, Class<?>> extensionClasses = new HashMap<>();
     private final Map<Class<?>, Object> extensionClassInstances = new HashMap<>();
 
-    List<org.jboss.jandex.MethodInfo> findExtensionMethods(DotName annotation) {
+    private final IndexView extensionsIndex;
+
+    public CdiLiteExtUtil() {
         // TODO this is silly and we should just use reflection,
         //  I only do this to reuse previously written code
         Indexer extensionsIndexer = new Indexer();
@@ -41,8 +44,10 @@ class CdiLiteExtUtil {
                 throw new UncheckedIOException(e);
             }
         }
-        Index extensionsIndex = extensionsIndexer.complete();
+        extensionsIndex = extensionsIndexer.complete();
+    }
 
+    List<org.jboss.jandex.MethodInfo> findExtensionMethods(DotName annotation) {
         return extensionsIndex.getAllKnownImplementors(DotNames.BUILD_COMPATIBLE_EXTENSION)
                 .stream()
                 .flatMap(it -> it.annotations()
@@ -191,29 +196,7 @@ class CdiLiteExtUtil {
     }
 
     // ---
-
-    // ---
     // the following methods use reflection, everything else in the CdiLiteExt processors is reflection-free
-
-    private Class<?> getExtensionClass(String className) {
-        return extensionClasses.computeIfAbsent(className, ignored -> {
-            try {
-                return Class.forName(className, true, Thread.currentThread().getContextClassLoader());
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
-
-    private Object getExtensionClassInstance(Class<?> clazz) {
-        return extensionClassInstances.computeIfAbsent(clazz, ignored -> {
-            try {
-                return clazz.newInstance();
-            } catch (ReflectiveOperationException e) {
-                throw new RuntimeException(e);
-            }
-        });
-    }
 
     void callExtensionMethod(org.jboss.jandex.MethodInfo jandexMethod, List<Object> arguments)
             throws ReflectiveOperationException {
@@ -259,10 +242,10 @@ class CdiLiteExtUtil {
             }
         }
 
-        Class<?> extensionClass = getExtensionClass(jandexMethod.declaringClass().name().toString());
-        Object extensionClassInstance = getExtensionClassInstance(extensionClass);
+        Class<?> extensionClass = extensionClasses.get(jandexMethod.declaringClass().name().toString());
+        Object extensionClassInstance = extensionClassInstances.get(extensionClass);
 
-        Method methodReflective = extensionClass.getMethod(jandexMethod.name(), parameterTypes);
+        Method methodReflective = extensionClass.getDeclaredMethod(jandexMethod.name(), parameterTypes);
         methodReflective.setAccessible(true);
         methodReflective.invoke(extensionClassInstance, arguments.toArray());
     }
